@@ -7,6 +7,9 @@ public class Element {
         this.idOfNodes = idOfNodes;
     }
 
+    public Element() {
+    }
+
     public int[] getIdOfNodes() {
         return idOfNodes;
     }

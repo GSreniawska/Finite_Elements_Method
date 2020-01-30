@@ -6,24 +6,32 @@ public class Grid {
     private Element[] elements;
 
     public Grid(GlobalData globalData) {
-        nodes=new Node[globalData.getnN()];
-        elements=new Element[globalData.getnE()];
+        this.nodes=new Node[globalData.getnN()];
+        this.elements=new Element[globalData.getnE()];
+        elements=calcElements(globalData);
+        calcNodes(globalData);
+        printElements(globalData);
+        printNodes(globalData);
     }
-    public void calcElements(GlobalData globalData){
-        int[] arrOfNodesIndexes=new int[4];
+    public Element[] calcElements(GlobalData globalData){
+        int[] arrOfNodesIndexes;
+        int counter=0;
+        Element tempElement=new Element();
 
-        for(int i=0;i<globalData.getnE();i++) //dla każdego elementu:
+        for (int i = 0; i < globalData.getnE(); i++) //dla każdego elementu:
         {
-            if((i!=0 && i%(globalData.getnH()-1)==0))   //wypelnienie tablicy indeksami nodow
-            {
-                arrOfNodesIndexes[0]=i;
-                arrOfNodesIndexes[1]=i+globalData.getnH();
-                arrOfNodesIndexes[2]=i+globalData.getnH()+1;
-                arrOfNodesIndexes[3]=i+1;
-                Element tempElement=new Element(arrOfNodesIndexes);
-                this.elements[i]=tempElement;
+            if((i%(globalData.getnH()-1)==0)&& (i!=0)){
+                counter++;
             }
+            arrOfNodesIndexes=new int[4];
+            arrOfNodesIndexes[0] = i + counter;
+            arrOfNodesIndexes[1] = i + globalData.getnH() + counter;
+            arrOfNodesIndexes[2] = i + globalData.getnH() + 1 + counter;
+            arrOfNodesIndexes[3] = i + 1 + counter;
+            tempElement=new Element(arrOfNodesIndexes);
+            elements[i] = tempElement;
         }
+        return elements;
     }
     public void printElements(GlobalData globalData) {
       for (int i=0;i<globalData.getnE();i++)
@@ -36,23 +44,47 @@ public class Grid {
         double y=0;
         double deltaX=globalData.getW()/(globalData.getnW()-1);
         double deltaY=globalData.getH()/(globalData.getnH()-1);
+        Node tempNode;
+        int k=0;
 
-        for(int i=0;i<globalData.getnN();i++) //przejscie po nodach
-        {
-            Node tempNode=new Node(i,x,y,globalData.getTInitial());
-            if(tempNode.getX()==0||tempNode.getY()==0||tempNode.getX()==globalData.getW()||tempNode.getY()==globalData.getH()){
-                tempNode.setBC(false);
-            }else{
-                tempNode.setBC(true);
+            for (int i = 0; i < globalData.getnW(); i++) {
+                for (int j = 0; j < globalData.getnH(); j++) {
+                    tempNode = new Node(k, i * deltaX, j * deltaY, globalData.getTInitial());
+
+                    if (tempNode.getX() == 0 || tempNode.getY() == 0 || tempNode.getX() == globalData.getW() || tempNode.getY() == globalData.getnH()) {
+                        tempNode.setBC(true);
+                    } else {
+                        tempNode.setBC(false);
+                    }
+
+                    nodes[k]=tempNode;
+                    k++;
+
+
+                }
             }
-            nodes[i]=tempNode;
-            x+=deltaX;
-            y+=deltaY;
-        }
+
+
     }
     public void printNodes(GlobalData globalData){
         for (int i = 0; i <globalData.getnN() ; i++) {
             System.out.println(nodes[i]);
         }
+    }
+
+    public Node[] getNodes() {
+        return nodes;
+    }
+
+    public void setNodes(Node[] nodes) {
+        this.nodes = nodes;
+    }
+
+    public Element[] getElements() {
+        return elements;
+    }
+
+    public void setElements(Element[] elements) {
+        this.elements = elements;
     }
 }

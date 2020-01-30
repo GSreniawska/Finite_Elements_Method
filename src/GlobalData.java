@@ -22,6 +22,7 @@ public class GlobalData {
     private double tInitial;    //temperatura poczatkowa
 
     public GlobalData() {
+        readDataFromFile();
     }
 
     //wczytanie danych z pliku
@@ -29,7 +30,7 @@ public class GlobalData {
     public void readDataFromFile() {
 
         try {
-            File file = new File("F:\\Java\\Projects\\Sreniawska_Gabriela_Gr4_MES\\data.txt");
+            File file = new File("F:\\Java\\Projects\\Sreniawska_Gabriela_MES\\data.txt");
             BufferedReader br = new BufferedReader(new FileReader((file)));
             String[] tempArr=new String[2];
             HashMap<String,String> mapOfData=new HashMap<>();
@@ -151,5 +152,22 @@ public class GlobalData {
 
     public void setTInitial(double tInitial) {
         this.tInitial = tInitial;
+    }
+
+    @Override
+    public String toString() {
+        return "GlobalData{" +
+                "H=" + H +
+                ", W=" + W +
+                ", nH=" + nH +
+                ", nW=" + nW +
+                ", nE=" + nE +
+                ", nN=" + nN +
+                ", alfa=" + alfa +
+                ", k=" + k +
+                ", c=" + c +
+                ", ro=" + ro +
+                ", tInitial=" + tInitial +
+                '}';
     }
 }
