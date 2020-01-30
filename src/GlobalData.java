@@ -20,6 +20,9 @@ public class GlobalData {
     private double ro;
 
     private double tInitial;    //temperatura poczatkowa
+    private double simTime;
+    private double simStepTime;
+    private double ambientTemp;
 
     public GlobalData() {
         readDataFromFile();
@@ -61,6 +64,9 @@ public class GlobalData {
         setC(Double.parseDouble(mapOfData.get("c")));
         setRo(Double.parseDouble(mapOfData.get("ro")));
         setTInitial(Double.parseDouble(mapOfData.get("tInitial")));
+        setAmbientTemp(Double.parseDouble(mapOfData.get("ambientTemp")));
+        setSimTime(Double.parseDouble(mapOfData.get("simTime")));
+        setSimStepTime(Double.parseDouble(mapOfData.get("simStepTime")));
     }
     //wyswietlanie danych
     public  void printData(HashMap<String,String> mapOfData){
@@ -152,6 +158,38 @@ public class GlobalData {
 
     public void setTInitial(double tInitial) {
         this.tInitial = tInitial;
+    }
+
+    public double gettInitial() {
+        return tInitial;
+    }
+
+    public void settInitial(double tInitial) {
+        this.tInitial = tInitial;
+    }
+
+    public double getSimTime() {
+        return simTime;
+    }
+
+    public void setSimTime(double simTime) {
+        this.simTime = simTime;
+    }
+
+    public double getSimStepTime() {
+        return simStepTime;
+    }
+
+    public void setSimStepTime(double simStepTime) {
+        this.simStepTime = simStepTime;
+    }
+
+    public double getAmbientTemp() {
+        return ambientTemp;
+    }
+
+    public void setAmbientTemp(double ambientTemp) {
+        this.ambientTemp = ambientTemp;
     }
 
     @Override

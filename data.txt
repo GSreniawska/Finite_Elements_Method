@@ -1,9 +1,12 @@
-H=1.5
-W=0.5
-nH=6
+H=0.100
+W=0.100
+nH=4
 nW=4
-alfa=25
-k=30
+alfa=300
+k=25
 c=700
 ro=7800
 tInitial=100
+simTime=500
+simStepTime=50
+ambientTemp=1200

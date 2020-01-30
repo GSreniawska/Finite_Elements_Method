@@ -1,4 +1,3 @@
-import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
@@ -8,7 +7,7 @@ public class UniversalElement {
 
     private Point2D.Double[] localPoints;
     private Point2D.Double[] globalPoints;
-    private double[][] shapeFunctions;
+    private double[][] shapeVector2;
     private double[][] ksiArray;
     private double[][] etaArray;
     private double[][] jacobiArray;
@@ -25,7 +24,7 @@ public class UniversalElement {
         this.size=4;
         this.jacobiSize=2;
 
-        this.shapeFunctions=new double[size][size];
+        this.shapeVector2 =new double[size][size];
         this.etaArray=new double[size][size];
         this.ksiArray=new double[size][size];
         this.localPoints =new Point2D.Double[size];
@@ -59,17 +58,18 @@ public class UniversalElement {
         for (int i = 0; i <grid.getElements()[numberOfElement].getIdOfNodes().length ; i++) {
 
             tempNodes[i]=grid.getNodes()[grid.getElements()[numberOfElement].getIdOfNodes()[i]];
+
         }
         //--------------------testowe globalpoint-------------------------------------
-        this.globalPoints[0]=new Point2D.Double(0.0,0.0);
-        this.globalPoints[1]=new Point2D.Double(0.025,0.0);
-        this.globalPoints[2]=new Point2D.Double(0.025,0.025);
-        this.globalPoints[3]=new Point2D.Double(0,0.025);
+//        this.globalPoints[0]=new Point2D.Double(0.0,0.0);
+//        this.globalPoints[1]=new Point2D.Double(0.025,0.0);
+//        this.globalPoints[2]=new Point2D.Double(0.025,0.025);
+//        this.globalPoints[3]=new Point2D.Double(0,0.025);
 
-//        this.globalPoints[0]=new Point2D.Double(tempNodes[0].getX(),tempNodes[0].getY());
-//        this.globalPoints[1]=new Point2D.Double(tempNodes[1].getX(),tempNodes[1].getY());
-//        this.globalPoints[2]=new Point2D.Double(tempNodes[2].getX(),tempNodes[2].getY());
-//        this.globalPoints[3]=new Point2D.Double(tempNodes[3].getX(),tempNodes[3].getY());
+        this.globalPoints[0]=new Point2D.Double(tempNodes[0].getX(),tempNodes[0].getY());
+        this.globalPoints[1]=new Point2D.Double(tempNodes[1].getX(),tempNodes[1].getY());
+        this.globalPoints[2]=new Point2D.Double(tempNodes[2].getX(),tempNodes[2].getY());
+        this.globalPoints[3]=new Point2D.Double(tempNodes[3].getX(),tempNodes[3].getY());
 
 
     }
@@ -145,7 +145,7 @@ public class UniversalElement {
         return 0.25 * (1 - point.getX());
     }
 
-    //--------------------------funkcje potrzebne do policzenia macierzy H lokalnej-------------------
+    //------------------------------Macierz H-----------------------------------------------------------
     public double[][] calc_dN_dX(int integralPointNumber) {
 
         for (int i = 0; i <size ; i++) { //i -numer funkcji ksztaltu;
@@ -186,30 +186,6 @@ public class UniversalElement {
             System.out.println("");
         }
     }
-    //    public double[][] calc_dN_dX_T_detJ(int integralPointNumber,int c){
-//        double[][] tempArr=new double[size][size];
-//        for (int j = 0; j <size ; j++) {
-//            for (int i = 0; i <size ; i++) {
-//                tempArr[integralPointNumber][i]=calcDetJ(integralPointNumber)*(calc_dN_dX(integralPointNumber)[integralPointNumber][j]*calc_dN_dX(integralPointNumber)[integralPointNumber][i]);
-//                System.out.print(tempArr[integralPointNumber][i]+"    ");
-//            }
-//            System.out.println();
-//        }
-//        System.out.println();
-//
-//        print2DArray(tempArr,size);
-//        return tempArr;
-//    }
-//    public double[][] calc_dN_dY_T_detJ(int integralPointNumber)
-//    {
-//        double[][] tempArr=new double[size][size];
-//        for (int j = 0; j <size ; j++) {
-//            for (int i = 0; i <size ; i++) {
-//                tempArr[integralPointNumber][i] = calcDetJ(integralPointNumber) * (calc_dN_dY(integralPointNumber)[integralPointNumber][j] * calc_dN_dY(integralPointNumber)[integralPointNumber][i]);
-//            }
-//        }
-//        return tempArr;
-//    }
     public double[][] calcLocal_H_matrix(int integralPointNumber, int k) { //k-conductivity
         double[][] local_H_matrix=new double[size][size];
         for (int i = 0; i <size ; i++) {
@@ -224,7 +200,7 @@ public class UniversalElement {
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
 
-                H_Matrix[i][j] = (calcLocal_H_matrix(0, k)[i][j]) + (calcLocal_H_matrix(1, k)[i][j]) + (calcLocal_H_matrix(2, k)[i][j]) + (calcLocal_H_matrix(3, k)[i][j]);
+                H_Matrix[i][j] = (this.calcLocal_H_matrix(0, k)[i][j]) + (this.calcLocal_H_matrix(1, k)[i][j]) + (this.calcLocal_H_matrix(2, k)[i][j]) + (this.calcLocal_H_matrix(3, k)[i][j]);
             }
         }
         System.out.println("H Matrix");
@@ -264,71 +240,325 @@ public class UniversalElement {
     }
     //------------------------------Macierz H_BC--------------------------------------------------------
     public double calcDetJ1D(double l){
-        return 0.5*l;
+        return Math.abs(0.5*l);
     }
-    public Point2D.Double[] findPCsDependOnBcCondition(){
-        ArrayList<Point2D.Double> listOfPoints=new ArrayList<>();
-
-
-        if(tempNodes[0].isBC()&&tempNodes[1].isBC()){
-            Point2D.Double pc1B=new Point2D.Double(-1/Math.sqrt(3),-1);
-            Point2D.Double pc2B=new Point2D.Double(1/Math.sqrt(3),-1);
-            listOfPoints.add(pc1B);
-            listOfPoints.add(pc2B);
-        }
-        if(tempNodes[1].isBC()&&tempNodes[2].isBC()) {
-            Point2D.Double pc1R = new Point2D.Double(1, -1 / Math.sqrt(3));
-            Point2D.Double pc2R = new Point2D.Double(1, 1 / Math.sqrt(3));
-            listOfPoints.add(pc1R);
-            listOfPoints.add(pc2R);
-        }
-        if(tempNodes[2].isBC()&&tempNodes[3].isBC()){
-            Point2D.Double pc1U=new Point2D.Double(-1/Math.sqrt(3),1);
-            Point2D.Double pc2U=new Point2D.Double(1/Math.sqrt(3),1);
-            listOfPoints.add(pc1U);
-            listOfPoints.add(pc2U);
-        }
-        if(tempNodes[3].isBC()&&tempNodes[1].isBC()){
-            Point2D.Double pc1L=new Point2D.Double(-1,-1/Math.sqrt(3));
-            Point2D.Double pc2L=new Point2D.Double(-1,1/Math.sqrt(3));
-            listOfPoints.add(pc1L);
-            listOfPoints.add(pc2L);
-        }
-        Point2D.Double[] pcSArray=new Point2D.Double[listOfPoints.size()];
-        for (int i = 0; i <listOfPoints.size() ; i++) {
-            pcSArray[i]=listOfPoints.get(i);
-        }
-        return pcSArray;
-    }
-    public double calcL(){
-        //pzryjmujemy ze mamy kwadratowe elementy;
-        return tempNodes[0].getX()-tempNodes[1].getX();
-    }
-    public double[] calcShapeVector(Point2D.Double point){
-        double[] shapeVector=new double[4];
-        shapeVector[0]=0.25 * (1 - point.getX()) * (1 - point.getY());
-        shapeVector[0]=0.25 * (1 + point.getX()) * (1 - point.getY());
-        shapeVector[0]=0.25 * (1 + point.getX()) * (1 + point.getY());
-        shapeVector[0]=0.25 * (1 - point.getX()) * (1 + point.getY());
-        return shapeVector;
-    }
-
-    public void calcLocal_H_BC_Matrix(int integralPointNumber,int alfa) {
-        double l=calcL();
-
-        double[][] local_H_BC_matrix=new double[size][size];
-        for (int i = 0; i <size ; i++) {
+    public double[][] calcLocal_H_BC_matrix(int alfa, int numberOfPlane) {
+        ArrayList<Point2D.Double> listOfPoints = new ArrayList<>();
+        double[][] shapeArray1 = new double[size][size];
+        double[][] shapeArray2 = new double[size][size];
+        double l;
+        double detJ1D;
+        double[][] sumPC_H_BCArray = new double[size][size];
+        for (int i = 0; i < size; i++) {
             for (int j = 0; j <size ; j++) {
-                for (int k = 0; k <findPCsDependOnBcCondition().length ; k++) {
 
-                 //   local_H_BC_matrix[i][j] = calcShapeVector(findPCsDependOnBcCondition()[i])[i]*calcShapeFunctions(integralPointNumber)[k][j]+calcDetJ1D(l);
-                }
+                sumPC_H_BCArray[i][j]=0;
             }
         }
-      //  print2DArray(local_H_BC_matrix,size);
+
+
+        if (tempNodes[0].isBC() && tempNodes[1].isBC()&&numberOfPlane==1) {
+            l = calcL(0, 1);
+            detJ1D = calcDetJ1D(l);
+            Point2D.Double pc1B = new Point2D.Double((-1 / Math.sqrt(3)), -1.);
+            Point2D.Double pc2B = new Point2D.Double((1 / Math.sqrt(3)), -1.);
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    shapeArray1[i][j] = 0;
+                    shapeArray2[i][j] = 0;
+                    sumPC_H_BCArray[i][j]=0;
+                }
+            }
+            shapeArray1[0][0] = alfa * 0.25 * (1 - pc1B.getX()) * (1 - pc1B.getY()) * 0.25 * (1 - pc1B.getX()) * (1 - pc1B.getY());
+            shapeArray1[0][1] = alfa * 0.25 * (1 + pc1B.getX()) * (1 - pc1B.getY()) * 0.25 * (1 - pc1B.getX()) * (1 - pc1B.getY());
+            shapeArray1[1][0] = alfa * 0.25 * (1 - pc1B.getX()) * (1 - pc1B.getY()) * 0.25 * (1 + pc1B.getX()) * (1 - pc1B.getY());
+            shapeArray1[1][1] = alfa * 0.25 * (1 + pc1B.getX()) * (1 - pc1B.getY()) * 0.25 * (1 + pc1B.getX()) * (1 - pc1B.getY());
+         //   print2DArray(shapeArray1, size);
+
+            shapeArray2[0][0] = alfa * 0.25 * (1 - pc2B.getX()) * (1 - pc2B.getY()) * 0.25 * (1 - pc2B.getX()) * (1 - pc2B.getY());
+            shapeArray2[0][1] = alfa * 0.25 * (1 + pc2B.getX()) * (1 - pc2B.getY()) * 0.25 * (1 - pc2B.getX()) * (1 - pc2B.getY());
+            shapeArray2[1][0] = alfa * 0.25 * (1 - pc2B.getX()) * (1 - pc2B.getY()) * 0.25 * (1 + pc2B.getX()) * (1 - pc2B.getY());
+            shapeArray2[1][1] = alfa * 0.25 * (1 + pc2B.getX()) * (1 - pc2B.getY()) * 0.25 * (1 + pc2B.getX()) * (1 - pc2B.getY());
+         //   print2DArray(shapeArray2, size);
+
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    sumPC_H_BCArray[i][j] = (shapeArray1[i][j] + shapeArray2[i][j]) * detJ1D;
+                }
+            }
+
+            return sumPC_H_BCArray;
+
+        }
+        if (tempNodes[1].isBC() && tempNodes[2].isBC()&&numberOfPlane==2) {
+            Point2D.Double pc1R = new Point2D.Double(1, -1 / Math.sqrt(3));
+            Point2D.Double pc2R = new Point2D.Double(1, 1 / Math.sqrt(3));
+            l = calcL(1, 2);
+            detJ1D = calcDetJ1D(l);
+
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    shapeArray1[i][j] = 0;
+                    shapeArray2[i][j] = 0;
+
+                }
+            }
+            shapeArray1[1][1] = alfa * 0.25 * (1 - pc1R.getX()) * (1 - pc1R.getY()) * 0.25 * (1 - pc1R.getX()) * (1 - pc1R.getY());
+            shapeArray1[1][2] = alfa * 0.25 * (1 + pc1R.getX()) * (1 - pc1R.getY()) * 0.25 * (1 - pc1R.getX()) * (1 - pc1R.getY());
+            shapeArray1[2][1] = alfa * 0.25 * (1 - pc1R.getX()) * (1 - pc1R.getY()) * 0.25 * (1 + pc1R.getX()) * (1 - pc1R.getY());
+            shapeArray1[2][2] = alfa * 0.25 * (1 + pc1R.getX()) * (1 - pc1R.getY()) * 0.25 * (1 + pc1R.getX()) * (1 - pc1R.getY());
+           // print2DArray(shapeArray1, size);
+
+            shapeArray2[1][1] = alfa * 0.25 * (1 - pc2R.getX()) * (1 - pc2R.getY()) * 0.25 * (1 - pc2R.getX()) * (1 - pc2R.getY());
+            shapeArray2[1][2] = alfa * 0.25 * (1 + pc2R.getX()) * (1 - pc2R.getY()) * 0.25 * (1 - pc2R.getX()) * (1 - pc2R.getY());
+            shapeArray2[2][1] = alfa * 0.25 * (1 - pc2R.getX()) * (1 - pc2R.getY()) * 0.25 * (1 + pc2R.getX()) * (1 - pc2R.getY());
+            shapeArray2[2][2] = alfa * 0.25 * (1 + pc2R.getX()) * (1 - pc2R.getY()) * 0.25 * (1 + pc2R.getX()) * (1 - pc2R.getY());
+           // print2DArray(shapeArray2, size);
+
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    sumPC_H_BCArray[i][j] = (shapeArray1[i][j] + shapeArray2[i][j]) * detJ1D;
+                }
+            }
+
+            return sumPC_H_BCArray;
+        }
+        if (tempNodes[2].isBC() && tempNodes[3].isBC()&&numberOfPlane==3) {
+            Point2D.Double pc1U = new Point2D.Double(-1 / Math.sqrt(3), 1);
+            Point2D.Double pc2U = new Point2D.Double(1 / Math.sqrt(3), 1);
+            l = calcL(2, 3);
+            detJ1D = calcDetJ1D(l);
+
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    shapeArray1[i][j] = 0;
+                    shapeArray2[i][j] = 0;
+
+                }
+            }
+            shapeArray1[2][2] = alfa * 0.25 * (1 - pc1U.getX()) * (1 - pc1U.getY()) * 0.25 * (1 - pc1U.getX()) * (1 - pc1U.getY());
+            shapeArray1[2][3] = alfa * 0.25 * (1 + pc1U.getX()) * (1 - pc1U.getY()) * 0.25 * (1 - pc1U.getX()) * (1 - pc1U.getY());
+            shapeArray1[3][2] = alfa * 0.25 * (1 - pc1U.getX()) * (1 - pc1U.getY()) * 0.25 * (1 + pc1U.getX()) * (1 - pc1U.getY());
+            shapeArray1[3][3] = alfa * 0.25 * (1 + pc1U.getX()) * (1 - pc1U.getY()) * 0.25 * (1 + pc1U.getX()) * (1 - pc1U.getY());
+         //   print2DArray(shapeArray1, size);
+
+            shapeArray2[0][0] = alfa * 0.25 * (1 - pc2U.getX()) * (1 - pc2U.getY()) * 0.25 * (1 - pc2U.getX()) * (1 - pc2U.getY());
+            shapeArray2[0][1] = alfa * 0.25 * (1 + pc2U.getX()) * (1 - pc2U.getY()) * 0.25 * (1 - pc2U.getX()) * (1 - pc2U.getY());
+            shapeArray2[1][0] = alfa * 0.25 * (1 - pc2U.getX()) * (1 - pc2U.getY()) * 0.25 * (1 + pc2U.getX()) * (1 - pc2U.getY());
+            shapeArray2[1][1] = alfa * 0.25 * (1 + pc2U.getX()) * (1 - pc2U.getY()) * 0.25 * (1 + pc2U.getX()) * (1 - pc2U.getY());
+           // print2DArray(shapeArray2, size);
+
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    sumPC_H_BCArray[i][j] = (shapeArray1[i][j] + shapeArray2[i][j]) * detJ1D;
+                }
+            }
+
+            return sumPC_H_BCArray;
+        }
+        if (tempNodes[3].isBC() && tempNodes[0].isBC()&&(numberOfPlane==4)) {
+            Point2D.Double pc1L = new Point2D.Double(-1, -1 / Math.sqrt(3));
+            Point2D.Double pc2L = new Point2D.Double(-1, 1 / Math.sqrt(3));
+            l = calcL(3, 1);
+            detJ1D = calcDetJ1D(l);
+
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    shapeArray1[i][j] = 0;
+                    shapeArray2[i][j] = 0;
+
+                }
+            }
+            shapeArray1[0][0] = alfa * 0.25 * (1 - pc1L.getX()) * (1 - pc1L.getY()) * 0.25 * (1 - pc1L.getX()) * (1 - pc1L.getY());
+            shapeArray1[0][3] = alfa * 0.25 * (1 + pc1L.getX()) * (1 - pc1L.getY()) * 0.25 * (1 - pc1L.getX()) * (1 - pc1L.getY());
+            shapeArray1[3][0] = alfa * 0.25 * (1 - pc1L.getX()) * (1 - pc1L.getY()) * 0.25 * (1 + pc1L.getX()) * (1 - pc1L.getY());
+            shapeArray1[3][3] = alfa * 0.25 * (1 + pc1L.getX()) * (1 - pc1L.getY()) * 0.25 * (1 + pc1L.getX()) * (1 - pc1L.getY());
+       //     print2DArray(shapeArray1, size);
+
+            shapeArray2[0][0] = alfa * 0.25 * (1 - pc2L.getX()) * (1 - pc2L.getY()) * 0.25 * (1 - pc2L.getX()) * (1 - pc2L.getY());
+            shapeArray2[0][3] = alfa * 0.25 * (1 + pc2L.getX()) * (1 - pc2L.getY()) * 0.25 * (1 - pc2L.getX()) * (1 - pc2L.getY());
+            shapeArray2[3][0] = alfa * 0.25 * (1 - pc2L.getX()) * (1 - pc2L.getY()) * 0.25 * (1 + pc2L.getX()) * (1 - pc2L.getY());
+            shapeArray2[3][3] = alfa * 0.25 * (1 + pc2L.getX()) * (1 - pc2L.getY()) * 0.25 * (1 + pc2L.getX()) * (1 - pc2L.getY());
+          //  print2DArray(shapeArray2, size);
+
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    sumPC_H_BCArray[i][j] = (shapeArray1[i][j] + shapeArray2[i][j]) * detJ1D;
+                }
+            }
+
+            return sumPC_H_BCArray;
+        }
+
+
+      return sumPC_H_BCArray;
     }
+    public double calcL(int i1,int i2){
+        //pzryjmujemy ze mamy kwadratowe elementy;
+        return Math.abs(globalPoints[i1].getX()-globalPoints[i2].getX());
+    }
+    public void calc_H_BC_Matrix(int alfa) {
 
+        double[][] H_BC_matrix=new double[size][size];
+        for (int i = 0; i <size ; i++) {
+            for (int j = 0; j <size ; j++) {
+                for (int k = 1; k <=size ; k++) {
 
+                    H_BC_matrix[i][j]+= calcLocal_H_BC_matrix(alfa,k)[i][j];
+                }
+            }
+
+        }
+        System.out.println("H_BC Matrix:");
+        print2DArray(H_BC_matrix,size);
+    }
+    //-------------------------------Wektor P -----------------------------------------------------------
+    public double[] calcLocal_P_vector(int numberOfPlane,int alfa){
+        double[] pLocalVector=new double[size];
+        double[] shapeVector1=new double[size];
+        double[] shapeVector2=new double[size];
+        double[] sumP_Vectors=new double[size];
+
+        double l,detJ1D;
+        if (tempNodes[0].isBC() && tempNodes[1].isBC()&&numberOfPlane==1) {
+            l = calcL(0, 1);
+            detJ1D = calcDetJ1D(l);
+            Point2D.Double pc1B = new Point2D.Double((-1 / Math.sqrt(3)), -1.);
+            Point2D.Double pc2B = new Point2D.Double((1 / Math.sqrt(3)), -1.);
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    shapeVector1[i] = 0;
+                    shapeVector2[i] = 0;
+                    sumP_Vectors[i]=0;
+                }
+            }
+            shapeVector1[0] = -alfa * 0.25 * (1 - pc1B.getX()) * (1 - pc1B.getY()) * 0.25 * (1 - pc1B.getX()) * (1 - pc1B.getY());
+            shapeVector1[1] = -alfa * 0.25 * (1 + pc1B.getX()) * (1 - pc1B.getY()) * 0.25 * (1 - pc1B.getX()) * (1 - pc1B.getY());
+            shapeVector1[2] = -alfa * 0.25 * (1 - pc1B.getX()) * (1 - pc1B.getY()) * 0.25 * (1 + pc1B.getX()) * (1 - pc1B.getY());
+            shapeVector1[3] = -alfa * 0.25 * (1 + pc1B.getX()) * (1 - pc1B.getY()) * 0.25 * (1 + pc1B.getX()) * (1 - pc1B.getY());
+            //   print2DArray(shapeArray1, size);
+
+            shapeVector2[0] = -alfa * 0.25 * (1 - pc2B.getX()) * (1 - pc2B.getY()) * 0.25 * (1 - pc2B.getX()) * (1 - pc2B.getY());
+            shapeVector2[1] = -alfa * 0.25 * (1 + pc2B.getX()) * (1 - pc2B.getY()) * 0.25 * (1 - pc2B.getX()) * (1 - pc2B.getY());
+            shapeVector2[2] = -alfa * 0.25 * (1 - pc2B.getX()) * (1 - pc2B.getY()) * 0.25 * (1 + pc2B.getX()) * (1 - pc2B.getY());
+            shapeVector2[3]= -alfa * 0.25 * (1 + pc2B.getX()) * (1 - pc2B.getY()) * 0.25 * (1 + pc2B.getX()) * (1 - pc2B.getY());
+            //   print2DArray(shapeArray2, size);
+            for (int i = 0; i < size; i++) {
+                    sumP_Vectors[i] = (shapeVector1[i] + shapeVector2[i]) * detJ1D;
+            }
+            return sumP_Vectors;
+        }
+        if (tempNodes[1].isBC() && tempNodes[2].isBC()&&numberOfPlane==2) {
+            Point2D.Double pc1R = new Point2D.Double(1, -1 / Math.sqrt(3));
+            Point2D.Double pc2R = new Point2D.Double(1, 1 / Math.sqrt(3));
+            l = calcL(1, 2);
+            detJ1D = calcDetJ1D(l);
+
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    shapeVector1[i] = 0;
+                    shapeVector2[i] = 0;
+
+                }
+            }
+            shapeVector1[0] = -alfa * 0.25 * (1 - pc1R.getX()) * (1 - pc1R.getY()) * 0.25 * (1 - pc1R.getX()) * (1 - pc1R.getY());
+            shapeVector1[1] = -alfa * 0.25 * (1 + pc1R.getX()) * (1 - pc1R.getY()) * 0.25 * (1 - pc1R.getX()) * (1 - pc1R.getY());
+            shapeVector1[2] = -alfa * 0.25 * (1 - pc1R.getX()) * (1 - pc1R.getY()) * 0.25 * (1 + pc1R.getX()) * (1 - pc1R.getY());
+            shapeVector1[3] = -alfa * 0.25 * (1 + pc1R.getX()) * (1 - pc1R.getY()) * 0.25 * (1 + pc1R.getX()) * (1 - pc1R.getY());
+            // print2DArray(shapeArray1, size);
+
+            shapeVector2[0] = -alfa * 0.25 * (1 - pc2R.getX()) * (1 - pc2R.getY()) * 0.25 * (1 - pc2R.getX()) * (1 - pc2R.getY());
+            shapeVector2[1] = -alfa * 0.25 * (1 + pc2R.getX()) * (1 - pc2R.getY()) * 0.25 * (1 - pc2R.getX()) * (1 - pc2R.getY());
+            shapeVector2[2] = -alfa * 0.25 * (1 - pc2R.getX()) * (1 - pc2R.getY()) * 0.25 * (1 + pc2R.getX()) * (1 - pc2R.getY());
+            shapeVector2[3] =- alfa * 0.25 * (1 + pc2R.getX()) * (1 - pc2R.getY()) * 0.25 * (1 + pc2R.getX()) * (1 - pc2R.getY());
+            // print2DArray(shapeArray2, size);
+
+            for (int i = 0; i < size; i++) {
+                sumP_Vectors[i] = (shapeVector1[i] + shapeVector2[i]) * detJ1D;
+            }
+            return sumP_Vectors;
+        }
+        if (tempNodes[2].isBC() && tempNodes[3].isBC()&&numberOfPlane==3) {
+            Point2D.Double pc1U = new Point2D.Double(-1 / Math.sqrt(3), 1);
+            Point2D.Double pc2U = new Point2D.Double(1 / Math.sqrt(3), 1);
+            l = calcL(2, 3);
+            detJ1D = calcDetJ1D(l);
+
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    shapeVector1[i] = 0;
+                    shapeVector2[i] = 0;
+
+                }
+            }
+            shapeVector1[0]= -alfa * 0.25 * (1 - pc1U.getX()) * (1 - pc1U.getY()) * 0.25 * (1 - pc1U.getX()) * (1 - pc1U.getY());
+            shapeVector1[1]= -alfa * 0.25 * (1 + pc1U.getX()) * (1 - pc1U.getY()) * 0.25 * (1 - pc1U.getX()) * (1 - pc1U.getY());
+            shapeVector1[2] = -alfa * 0.25 * (1 - pc1U.getX()) * (1 - pc1U.getY()) * 0.25 * (1 + pc1U.getX()) * (1 - pc1U.getY());
+            shapeVector1[3] = -alfa * 0.25 * (1 + pc1U.getX()) * (1 - pc1U.getY()) * 0.25 * (1 + pc1U.getX()) * (1 - pc1U.getY());
+            //   print2DArray(shapeArray1, size);
+
+            shapeVector2[0] =- alfa * 0.25 * (1 - pc2U.getX()) * (1 - pc2U.getY()) * 0.25 * (1 - pc2U.getX()) * (1 - pc2U.getY());
+            shapeVector2[1]= -alfa * 0.25 * (1 + pc2U.getX()) * (1 - pc2U.getY()) * 0.25 * (1 - pc2U.getX()) * (1 - pc2U.getY());
+            shapeVector2[2] = -alfa * 0.25 * (1 - pc2U.getX()) * (1 - pc2U.getY()) * 0.25 * (1 + pc2U.getX()) * (1 - pc2U.getY());
+            shapeVector2[3] = -alfa * 0.25 * (1 + pc2U.getX()) * (1 - pc2U.getY()) * 0.25 * (1 + pc2U.getX()) * (1 - pc2U.getY());
+            // print2DArray(shapeArray2, size);
+
+            for (int i = 0; i < size; i++) {
+
+                    sumP_Vectors[i] = (shapeVector1[i] + shapeVector2[i]) * detJ1D;
+
+            }
+
+            return sumP_Vectors;
+        }
+        if (tempNodes[3].isBC() && tempNodes[0].isBC()&&(numberOfPlane==4)) {
+            Point2D.Double pc1L = new Point2D.Double(-1, -1 / Math.sqrt(3));
+            Point2D.Double pc2L = new Point2D.Double(-1, 1 / Math.sqrt(3));
+            l = calcL(3, 1);
+            detJ1D = calcDetJ1D(l);
+
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    shapeVector1[i] = 0;
+                    shapeVector2[i] = 0;
+
+                }
+            }
+            shapeVector1[0] = -alfa * 0.25 * (1 - pc1L.getX()) * (1 - pc1L.getY()) * 0.25 * (1 - pc1L.getX()) * (1 - pc1L.getY());
+            shapeVector1[1] = -alfa * 0.25 * (1 + pc1L.getX()) * (1 - pc1L.getY()) * 0.25 * (1 - pc1L.getX()) * (1 - pc1L.getY());
+            shapeVector1[2] = -alfa * 0.25 * (1 - pc1L.getX()) * (1 - pc1L.getY()) * 0.25 * (1 + pc1L.getX()) * (1 - pc1L.getY());
+            shapeVector1[3]=- alfa * 0.25 * (1 + pc1L.getX()) * (1 - pc1L.getY()) * 0.25 * (1 + pc1L.getX()) * (1 - pc1L.getY());
+            //     print2DArray(shapeArray1, size);
+
+            shapeVector2[0] = -alfa * 0.25 * (1 - pc2L.getX()) * (1 - pc2L.getY()) * 0.25 * (1 - pc2L.getX()) * (1 - pc2L.getY());
+            shapeVector2[1] = -alfa * 0.25 * (1 + pc2L.getX()) * (1 - pc2L.getY()) * 0.25 * (1 - pc2L.getX()) * (1 - pc2L.getY());
+            shapeVector2[2] =- alfa * 0.25 * (1 - pc2L.getX()) * (1 - pc2L.getY()) * 0.25 * (1 + pc2L.getX()) * (1 - pc2L.getY());
+            shapeVector2[3] = -alfa * 0.25 * (1 + pc2L.getX()) * (1 - pc2L.getY()) * 0.25 * (1 + pc2L.getX()) * (1 - pc2L.getY());
+            //  print2DArray(shapeArray2, size);
+
+            for (int i = 0; i < size; i++) {
+
+                    sumP_Vectors[i] = (shapeVector1[i] + shapeVector2[i]) * detJ1D;
+
+            }
+
+            return sumP_Vectors;
+        }
+return sumP_Vectors;
+    }
+    public double[] calc_P_Vector(int alfa){
+        double[] P_Vector=new double[size];
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                P_Vector[i]+=calcLocal_P_vector(i,alfa)[i];
+            }
+            
+        }
+        for (int i = 0; i <size ; i++) {
+            System.out.print(P_Vector[i]+"    ::    ");
+        }
+        return P_Vector;
+    }
     //-----------------------------gettery i settery-----------------------------------------------------
     public int getSize() {
         return size;
@@ -346,12 +576,12 @@ public class UniversalElement {
         this.localPoints = localPoints;
     }
 
-    public double[][] getShapeFunctions() {
-        return shapeFunctions;
+    public double[][] getShapeVector2() {
+        return shapeVector2;
     }
 
-    public void setShapeFunctions(double[][] shapeFunctions) {
-        this.shapeFunctions = shapeFunctions;
+    public void setShapeVector2(double[][] shapeVector2) {
+        this.shapeVector2 = shapeVector2;
     }
 
     public double[][] getKsiArray() {
