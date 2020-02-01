@@ -4,40 +4,44 @@ import java.util.ArrayList;
 public class UniversalElement {
     private int size;
     private int jacobiSize;
+    private Grid grid;
 
     private Point2D.Double[] localPoints;
-    private Point2D.Double[] globalPoints;
-    private double[][] shapeVector2;
+    private double[][] tempShapeFunctions;
     private double[][] ksiArray;
     private double[][] etaArray;
     private double[][] jacobiArray;
-    private double[][] reverseJacobiArray;
     private Node[] tempNodes;
     private double[][] dN_dXArray;
     private double[][] dN_dYArray;
     private double[][] H_Matrix;
     private double[][] C_Matrix;
+    private  double[][] local_C_matrix;
 
 
 
-    public UniversalElement() {
+    public UniversalElement(Grid grid) {
         this.size=4;
         this.jacobiSize=2;
-
-        this.shapeVector2 =new double[size][size];
+        this.grid=grid;
+        this.tempShapeFunctions=new double[size][size];
         this.etaArray=new double[size][size];
         this.ksiArray=new double[size][size];
         this.localPoints =new Point2D.Double[size];
-        this.globalPoints=new Point2D.Double[size];
+        this.localPoints =new Point2D.Double[size];
         this.jacobiArray=new double[jacobiSize][jacobiSize];
         this.tempNodes=new Node[size];
-        this.reverseJacobiArray=new double[jacobiSize][jacobiSize];
         this.dN_dXArray=new double[size][size];
         this.dN_dYArray =new double[size][size];
         this.H_Matrix=new double[size][size];
         this.C_Matrix=new double[size][size];
+        this.local_C_matrix=new double[size][size];
 
+
+       // calcGlobalPoints();
         calcLocalPoints();
+        calcShapeFunctions();
+
         System.out.println("\nShape Funcions Array");
        // calcShapeFunctions();
         System.out.println("\ndN_dKsi Array");
@@ -54,27 +58,6 @@ public class UniversalElement {
         this.localPoints[3]=new Point2D.Double(-1.0 / Math.sqrt(3), 1.0 / Math.sqrt(3));
 
     }
-    public void calcGlobalPoints(Grid grid,int numberOfElement){
-        for (int i = 0; i <grid.getElements()[numberOfElement].getIdOfNodes().length ; i++) {
-
-            tempNodes[i]=grid.getNodes()[grid.getElements()[numberOfElement].getIdOfNodes()[i]];
-
-        }
-        //--------------------testowe globalpoint-------------------------------------
-//        this.globalPoints[0]=new Point2D.Double(0.0,0.0);
-//        this.globalPoints[1]=new Point2D.Double(0.025,0.0);
-//        this.globalPoints[2]=new Point2D.Double(0.025,0.025);
-//        this.globalPoints[3]=new Point2D.Double(0,0.025);
-
-        this.globalPoints[0]=new Point2D.Double(tempNodes[0].getX(),tempNodes[0].getY());
-        this.globalPoints[1]=new Point2D.Double(tempNodes[1].getX(),tempNodes[1].getY());
-        this.globalPoints[2]=new Point2D.Double(tempNodes[2].getX(),tempNodes[2].getY());
-        this.globalPoints[3]=new Point2D.Double(tempNodes[3].getX(),tempNodes[3].getY());
-
-
-    }
-
-
     //---------------funkcje dodadkowe (do sprawdzenia poprawnosci)----------------------------
     public void calcKsiArray(){
         for (int i = 0; i <size ; i++) {
@@ -107,16 +90,17 @@ public class UniversalElement {
     //-------------------------funkcje pomocnicze---------------------------------------------
     public double dx_dKsi(Point2D.Double localPoint) {
 
-        return calc_dN1_dKsi(localPoint)*globalPoints[0].getX()+calc_dN2_dKsi(localPoint)*globalPoints[1].getX()+calc_dN3_dKsi(localPoint)*globalPoints[2].getX()+calc_dN4_dKsi(localPoint)*globalPoints[3].getX();
+
+        return calc_dN1_dKsi(localPoint)* localPoints[0].getX()+calc_dN2_dKsi(localPoint)* localPoints[1].getX()+calc_dN3_dKsi(localPoint)* localPoints[2].getX()+calc_dN4_dKsi(localPoint)* localPoints[3].getX();
     }
     public double dx_dEta(Point2D.Double localPoint) {
-        return calc_dN1_dEta(localPoint)*globalPoints[0].getX()+calc_dN2_dEta(localPoint)*globalPoints[1].getX()+calc_dN3_dEta(localPoint)*globalPoints[2].getX()+calc_dN4_dEta(localPoint)*globalPoints[3].getX();
+        return calc_dN1_dEta(localPoint)* localPoints[0].getX()+calc_dN2_dEta(localPoint)* localPoints[1].getX()+calc_dN3_dEta(localPoint)* localPoints[2].getX()+calc_dN4_dEta(localPoint)* localPoints[3].getX();
     }
     public double dy_dEta(Point2D.Double localPoint) {
-        return calc_dN1_dEta(localPoint)*globalPoints[0].getY()+calc_dN2_dEta(localPoint)*globalPoints[1].getY()+calc_dN3_dEta(localPoint)*globalPoints[2].getY()+calc_dN4_dEta(localPoint)*globalPoints[3].getY();
+        return calc_dN1_dEta(localPoint)* localPoints[0].getY()+calc_dN2_dEta(localPoint)* localPoints[1].getY()+calc_dN3_dEta(localPoint)* localPoints[2].getY()+calc_dN4_dEta(localPoint)* localPoints[3].getY();
     }
     public double dy_dKsi(Point2D.Double localPoint) {
-        return calc_dN1_dKsi(localPoint)*globalPoints[0].getY()+calc_dN2_dKsi(localPoint)*globalPoints[1].getY()+calc_dN3_dKsi(localPoint)*globalPoints[2].getY()+calc_dN4_dKsi(localPoint)*globalPoints[3].getY();
+        return calc_dN1_dKsi(localPoint)* localPoints[0].getY()+calc_dN2_dKsi(localPoint)* localPoints[1].getY()+calc_dN3_dKsi(localPoint)* localPoints[2].getY()+calc_dN4_dKsi(localPoint)* localPoints[3].getY();
     }
 
     public double calc_dN1_dKsi(Point2D.Double point) {
@@ -160,12 +144,11 @@ public class UniversalElement {
         for (int i = 0; i <size ; i++) {
 
                 dN_dYArray[integralPointNumber][i]= (1.0/calcDetJ(integralPointNumber) )* (calcJacobi(integralPointNumber)[0][0]*etaArray[integralPointNumber][i]-calcJacobi(integralPointNumber)[1][0]*ksiArray[integralPointNumber][i]);
-             //   System.out.print(dN_dYArray[integralPointNumber][i]+"     ");
         }
-      //  System.out.println("");
         return dN_dYArray;
 
     }
+
     public double[][]  calcJacobi(int integralPointNumber){
         jacobiArray[0][0]=dx_dKsi( localPoints[integralPointNumber]);  //integralPointNumber - numer punku calkowania [0,1,2,3]
         jacobiArray[0][1]=dx_dEta(localPoints[integralPointNumber]);
@@ -177,15 +160,6 @@ public class UniversalElement {
     public double calcDetJ(int integralPointNumber){
         return calcJacobi(integralPointNumber)[0][0] * calcJacobi(integralPointNumber)[1][1] - calcJacobi(integralPointNumber)[0][1] * calcJacobi(integralPointNumber)[1][0];
     }
-    public void calcReverseJacobi(int integralPointNumber) {
-        for (int i = 0; i <jacobiSize ; i++) {
-            for (int j = 0; j <jacobiSize ; j++) {
-                reverseJacobiArray[i][j]=jacobiArray[i][j]/calcDetJ(integralPointNumber);
-                System.out.print(reverseJacobiArray[i][j]);
-            }
-            System.out.println("");
-        }
-    }
     public double[][] calcLocal_H_matrix(int integralPointNumber, int k) { //k-conductivity
         double[][] local_H_matrix=new double[size][size];
         for (int i = 0; i <size ; i++) {
@@ -196,53 +170,53 @@ public class UniversalElement {
      //   print2DArray(local_H_matrix,size);
         return local_H_matrix;
     }
-    public double[][] calc_H_Matrix(int k) {
+    public double[][] calc_H_Matrix(int k,Node[] tempNodes) {
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
 
                 H_Matrix[i][j] = (this.calcLocal_H_matrix(0, k)[i][j]) + (this.calcLocal_H_matrix(1, k)[i][j]) + (this.calcLocal_H_matrix(2, k)[i][j]) + (this.calcLocal_H_matrix(3, k)[i][j]);
             }
         }
-        System.out.println("H Matrix");
-        print2DArray(H_Matrix, size);
+
+       // System.out.println("H Matrix");
+        //print2DArray(H_Matrix, size);
         return H_Matrix;
     }
     //------------------------------Macierz C-----------------------------------------------------------
-    public double[][] calcShapeFunctions(int integralPointNumber){
-        double[][] tempShapeFunctions=new double[size][size];
+    public void  calcShapeFunctions(){
+        for (int i = 0; i < size; i++) {
 
-        tempShapeFunctions[integralPointNumber][0]=0.25 * (1 - localPoints[integralPointNumber].getX()) * (1 - localPoints[integralPointNumber].getY());
-        tempShapeFunctions[integralPointNumber][1]=0.25 * (1 + localPoints[integralPointNumber].getX()) * (1 - localPoints[integralPointNumber].getY());
-        tempShapeFunctions[integralPointNumber][2]=0.25 * (1 + localPoints[integralPointNumber].getX()) * (1 + localPoints[integralPointNumber].getY());
-        tempShapeFunctions[integralPointNumber][3]=0.25 * (1 - localPoints[integralPointNumber].getX()) * (1 + localPoints[integralPointNumber].getY());
-
-        // print2DArray(shapeFunctions,size);
-        return tempShapeFunctions;
+            tempShapeFunctions[i][0]=0.25 * (1 - localPoints[i].getX()) * (1 - localPoints[i].getY());
+            tempShapeFunctions[i][1]=0.25 * (1 + localPoints[i].getX()) * (1 - localPoints[i].getY());
+            tempShapeFunctions[i][2]=0.25 * (1 + localPoints[i].getX()) * (1 + localPoints[i].getY());
+            tempShapeFunctions[i][3]=0.25 * (1 - localPoints[i].getX()) * (1 + localPoints[i].getY());
+        }
     }
     public double[][] calcLocal_C_matrix(int integralPointNumber,int c,int ro) {
-        double[][] local_C_matrix=new double[size][size];
         for (int i = 0; i <size ; i++) {
             for (int j = 0; j <size ; j++) {
-                local_C_matrix[i][j]=(calcShapeFunctions(integralPointNumber)[0][i]*calcShapeFunctions(integralPointNumber)[0][j]*calcDetJ(integralPointNumber)*c*ro)+calcShapeFunctions(integralPointNumber)[1][i]*calcShapeFunctions(integralPointNumber)[1][j]*calcDetJ(integralPointNumber)*c*ro+calcShapeFunctions(integralPointNumber)[2][i]*calcShapeFunctions(integralPointNumber)[2][j]*calcDetJ(integralPointNumber)*c*ro+calcShapeFunctions(integralPointNumber)[3][i]*calcShapeFunctions(integralPointNumber)[2][j]*calcDetJ(integralPointNumber)*c*ro+calcShapeFunctions(integralPointNumber)[3][i]*calcShapeFunctions(integralPointNumber)[3][j]*calcDetJ(integralPointNumber)*c*ro;
+                local_C_matrix[i][j]=tempShapeFunctions[integralPointNumber][i]*tempShapeFunctions[integralPointNumber][j];//+(tempShapeFunctions[1][i]*tempShapeFunctions[1][j])+tempShapeFunctions[2][i]*(tempShapeFunctions[2][j])+(tempShapeFunctions[2][i]*tempShapeFunctions[2][j])+tempShapeFunctions[3][i]*tempShapeFunctions[3][j]);
             }
         }
+        System.out.println("Local C: ");
+        print2DArray(local_C_matrix,size);
         return local_C_matrix;
     }
-    public double[][] calc_C_Matrix(int c,int ro){
+    public double[][] calc_C_Matrix(int c,int ro,Node[] tempNodes){
         for (int i = 0; i <size ; i++) {
             for (int j = 0; j <size ; j++) {
-                C_Matrix[i][j]=calcLocal_C_matrix(0,c,ro)[i][j]+calcLocal_C_matrix(1,c,ro)[i][j]+calcLocal_C_matrix(2,c,ro)[i][j]+calcLocal_C_matrix(3,c,ro)[i][j];
+                C_Matrix[i][j]=c*ro*(this.calcLocal_C_matrix(0,c,ro)[i][j]+this.calcLocal_C_matrix(1,c,ro)[i][j]+this.calcLocal_C_matrix(2,c,ro)[i][j]+this.calcLocal_C_matrix(3,c,ro)[i][j]);
             }
         }
-        System.out.println("C Matrix :");
-        print2DArray(C_Matrix,size);
+        System.out.println("C Matrix");
+
     return C_Matrix;
     }
     //------------------------------Macierz H_BC--------------------------------------------------------
     public double calcDetJ1D(double l){
         return Math.abs(0.5*l);
     }
-    public double[][] calcLocal_H_BC_matrix(int alfa, int numberOfPlane) {
+    public double[][] calcLocal_H_BC_matrix(int alfa, int numberOfPlane,Node[] tempNodes) {
         ArrayList<Point2D.Double> listOfPoints = new ArrayList<>();
         double[][] shapeArray1 = new double[size][size];
         double[][] shapeArray2 = new double[size][size];
@@ -258,7 +232,7 @@ public class UniversalElement {
 
 
         if (tempNodes[0].isBC() && tempNodes[1].isBC()&&numberOfPlane==1) {
-            l = calcL(0, 1);
+            l = calcL(0, 1,tempNodes);
             detJ1D = calcDetJ1D(l);
             Point2D.Double pc1B = new Point2D.Double((-1 / Math.sqrt(3)), -1.);
             Point2D.Double pc2B = new Point2D.Double((1 / Math.sqrt(3)), -1.);
@@ -293,7 +267,7 @@ public class UniversalElement {
         if (tempNodes[1].isBC() && tempNodes[2].isBC()&&numberOfPlane==2) {
             Point2D.Double pc1R = new Point2D.Double(1, -1 / Math.sqrt(3));
             Point2D.Double pc2R = new Point2D.Double(1, 1 / Math.sqrt(3));
-            l = calcL(1, 2);
+            l = calcL(1, 2,tempNodes);
             detJ1D = calcDetJ1D(l);
 
             for (int i = 0; i < size; i++) {
@@ -326,7 +300,7 @@ public class UniversalElement {
         if (tempNodes[2].isBC() && tempNodes[3].isBC()&&numberOfPlane==3) {
             Point2D.Double pc1U = new Point2D.Double(-1 / Math.sqrt(3), 1);
             Point2D.Double pc2U = new Point2D.Double(1 / Math.sqrt(3), 1);
-            l = calcL(2, 3);
+            l = calcL(2, 3,tempNodes);
             detJ1D = calcDetJ1D(l);
 
             for (int i = 0; i < size; i++) {
@@ -359,7 +333,7 @@ public class UniversalElement {
         if (tempNodes[3].isBC() && tempNodes[0].isBC()&&(numberOfPlane==4)) {
             Point2D.Double pc1L = new Point2D.Double(-1, -1 / Math.sqrt(3));
             Point2D.Double pc2L = new Point2D.Double(-1, 1 / Math.sqrt(3));
-            l = calcL(3, 1);
+            l = calcL(3, 1,tempNodes);
             detJ1D = calcDetJ1D(l);
 
             for (int i = 0; i < size; i++) {
@@ -393,18 +367,19 @@ public class UniversalElement {
 
       return sumPC_H_BCArray;
     }
-    public double calcL(int i1,int i2){
+    public double calcL(int i1,int i2,Node[] tempNodes){
         //pzryjmujemy ze mamy kwadratowe elementy;
-        return Math.abs(globalPoints[i1].getX()-globalPoints[i2].getX());
+        return Math.sqrt(Math.pow(tempNodes[i1].getX()-tempNodes[i2].getX(),2)+Math.pow(tempNodes[i1].getY()-tempNodes[i2].getY(),2));
     }
-    public void calc_H_BC_Matrix(int alfa) {
+    public void calc_H_BC_Matrix(int alfa,Node[] tempNodes) {
+
 
         double[][] H_BC_matrix=new double[size][size];
         for (int i = 0; i <size ; i++) {
             for (int j = 0; j <size ; j++) {
                 for (int k = 1; k <=size ; k++) {
 
-                    H_BC_matrix[i][j]+= calcLocal_H_BC_matrix(alfa,k)[i][j];
+                    H_BC_matrix[i][j]+= calcLocal_H_BC_matrix(alfa,k,tempNodes)[i][j];
                 }
             }
 
@@ -413,15 +388,16 @@ public class UniversalElement {
         print2DArray(H_BC_matrix,size);
     }
     //-------------------------------Wektor P -----------------------------------------------------------
-    public double[] calcLocal_P_vector(int numberOfPlane,int alfa){
+    public double[] calcLocal_P_vector(int numberOfPlane,int alfa,Node[] tempNodes){
         double[] pLocalVector=new double[size];
         double[] shapeVector1=new double[size];
         double[] shapeVector2=new double[size];
         double[] sumP_Vectors=new double[size];
 
-        double l,detJ1D;
+        double l=0,detJ1D=0;
+
         if (tempNodes[0].isBC() && tempNodes[1].isBC()&&numberOfPlane==1) {
-            l = calcL(0, 1);
+            l = calcL(0, 1,tempNodes);
             detJ1D = calcDetJ1D(l);
             Point2D.Double pc1B = new Point2D.Double((-1 / Math.sqrt(3)), -1.);
             Point2D.Double pc2B = new Point2D.Double((1 / Math.sqrt(3)), -1.);
@@ -451,7 +427,7 @@ public class UniversalElement {
         if (tempNodes[1].isBC() && tempNodes[2].isBC()&&numberOfPlane==2) {
             Point2D.Double pc1R = new Point2D.Double(1, -1 / Math.sqrt(3));
             Point2D.Double pc2R = new Point2D.Double(1, 1 / Math.sqrt(3));
-            l = calcL(1, 2);
+            l = calcL(1, 2,tempNodes);
             detJ1D = calcDetJ1D(l);
 
             for (int i = 0; i < size; i++) {
@@ -481,7 +457,7 @@ public class UniversalElement {
         if (tempNodes[2].isBC() && tempNodes[3].isBC()&&numberOfPlane==3) {
             Point2D.Double pc1U = new Point2D.Double(-1 / Math.sqrt(3), 1);
             Point2D.Double pc2U = new Point2D.Double(1 / Math.sqrt(3), 1);
-            l = calcL(2, 3);
+            l = calcL(2, 3,tempNodes);
             detJ1D = calcDetJ1D(l);
 
             for (int i = 0; i < size; i++) {
@@ -514,7 +490,7 @@ public class UniversalElement {
         if (tempNodes[3].isBC() && tempNodes[0].isBC()&&(numberOfPlane==4)) {
             Point2D.Double pc1L = new Point2D.Double(-1, -1 / Math.sqrt(3));
             Point2D.Double pc2L = new Point2D.Double(-1, 1 / Math.sqrt(3));
-            l = calcL(3, 1);
+            l = calcL(3, 1,tempNodes);
             detJ1D = calcDetJ1D(l);
 
             for (int i = 0; i < size; i++) {
@@ -546,16 +522,13 @@ public class UniversalElement {
         }
 return sumP_Vectors;
     }
-    public double[] calc_P_Vector(int alfa){
+    public double[] calc_P_Vector(int alfa,int numberOfElement,Node[] tempNodes){
         double[] P_Vector=new double[size];
         for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                P_Vector[i]+=calcLocal_P_vector(i,alfa)[i];
-            }
-            
+                P_Vector[i]+=calcLocal_P_vector(i,alfa,tempNodes)[i];
         }
         for (int i = 0; i <size ; i++) {
-            System.out.print(P_Vector[i]+"    ::    ");
+        //    System.out.print(P_Vector[i]+"    ::    ");
         }
         return P_Vector;
     }
@@ -576,13 +549,7 @@ return sumP_Vectors;
         this.localPoints = localPoints;
     }
 
-    public double[][] getShapeVector2() {
-        return shapeVector2;
-    }
 
-    public void setShapeVector2(double[][] shapeVector2) {
-        this.shapeVector2 = shapeVector2;
-    }
 
     public double[][] getKsiArray() {
         return ksiArray;
