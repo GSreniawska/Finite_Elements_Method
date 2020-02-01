@@ -83,14 +83,10 @@ public class Grid {
         }
     }
     public void aggregation(GlobalData globalData,Grid grid,UniversalElement universalElement){
-        System.out.println(globalData.getnE());
-        System.out.println(globalData.getnE());
         P_Global_Vector=new double[globalData.getnN()];
         H_Global_Matrix=new double[globalData.getnN()][globalData.getnN()];
         C_Global_Matrix=new double[globalData.getnN()][globalData.getnN()];
         for (int i = 0; i < globalData.getnE(); i++) {
-
-
             int[] id=new int[size];
             for (int j = 0; j <size ; j++) {
                 id[j]=grid.getElements()[i].getIdOfNodes()[j];
@@ -111,10 +107,10 @@ public class Grid {
         universalElement.print2DArray(H_Global_Matrix,globalData.getnN());
         System.out.println("C Matrix:");
         universalElement.print2DArray(C_Global_Matrix,globalData.getnN());
-        System.out.println("P Vector:");
-        for (int i = 0; i <globalData.getnN() ; i++) {
-            System.out.println(P_Global_Vector[i]+"     ");
-        }
+//        System.out.println("P Vector:");
+//        for (int i = 0; i <globalData.getnN() ; i++) {
+//            System.out.println(P_Global_Vector[i]+"     ");
+//        }
     }
     public void printNodes(GlobalData globalData){
         for (int i = 0; i <globalData.getnN() ; i++) {

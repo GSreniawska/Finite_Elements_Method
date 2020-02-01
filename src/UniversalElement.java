@@ -7,7 +7,7 @@ public class UniversalElement {
     private Grid grid;
 
     private Point2D.Double[] localPoints;
-    private double[][] tempShapeFunctions;
+    private double[][] shapeFunctions;
     private double[][] ksiArray;
     private double[][] etaArray;
     private double[][] jacobiArray;
@@ -24,7 +24,7 @@ public class UniversalElement {
         this.size=4;
         this.jacobiSize=2;
         this.grid=grid;
-        this.tempShapeFunctions=new double[size][size];
+        this.shapeFunctions =new double[size][size];
         this.etaArray=new double[size][size];
         this.ksiArray=new double[size][size];
         this.localPoints =new Point2D.Double[size];
@@ -90,17 +90,16 @@ public class UniversalElement {
     //-------------------------funkcje pomocnicze---------------------------------------------
     public double dx_dKsi(Point2D.Double localPoint) {
 
-
-        return calc_dN1_dKsi(localPoint)* localPoints[0].getX()+calc_dN2_dKsi(localPoint)* localPoints[1].getX()+calc_dN3_dKsi(localPoint)* localPoints[2].getX()+calc_dN4_dKsi(localPoint)* localPoints[3].getX();
+        return calc_dN1_dKsi(localPoint)* tempNodes[0].getX()+calc_dN2_dKsi(localPoint)* tempNodes[1].getX()+calc_dN3_dKsi(localPoint)* tempNodes[2].getX()+calc_dN4_dKsi(localPoint)* tempNodes[3].getX();
     }
     public double dx_dEta(Point2D.Double localPoint) {
-        return calc_dN1_dEta(localPoint)* localPoints[0].getX()+calc_dN2_dEta(localPoint)* localPoints[1].getX()+calc_dN3_dEta(localPoint)* localPoints[2].getX()+calc_dN4_dEta(localPoint)* localPoints[3].getX();
+        return calc_dN1_dEta(localPoint)* tempNodes[0].getX()+calc_dN2_dEta(localPoint)* tempNodes[1].getX()+calc_dN3_dEta(localPoint)* tempNodes[2].getX()+calc_dN4_dEta(localPoint)* tempNodes[3].getX();
     }
     public double dy_dEta(Point2D.Double localPoint) {
-        return calc_dN1_dEta(localPoint)* localPoints[0].getY()+calc_dN2_dEta(localPoint)* localPoints[1].getY()+calc_dN3_dEta(localPoint)* localPoints[2].getY()+calc_dN4_dEta(localPoint)* localPoints[3].getY();
+        return calc_dN1_dEta(localPoint)* tempNodes[0].getY()+calc_dN2_dEta(localPoint)* tempNodes[1].getY()+calc_dN3_dEta(localPoint)* tempNodes[2].getY()+calc_dN4_dEta(localPoint)* tempNodes[3].getY();
     }
     public double dy_dKsi(Point2D.Double localPoint) {
-        return calc_dN1_dKsi(localPoint)* localPoints[0].getY()+calc_dN2_dKsi(localPoint)* localPoints[1].getY()+calc_dN3_dKsi(localPoint)* localPoints[2].getY()+calc_dN4_dKsi(localPoint)* localPoints[3].getY();
+        return calc_dN1_dKsi(localPoint)* tempNodes[0].getY()+calc_dN2_dKsi(localPoint)* tempNodes[1].getY()+calc_dN3_dKsi(localPoint)* tempNodes[2].getY()+calc_dN4_dKsi(localPoint)* tempNodes[3].getY();
     }
 
     public double calc_dN1_dKsi(Point2D.Double point) {
@@ -132,18 +131,18 @@ public class UniversalElement {
     //------------------------------Macierz H-----------------------------------------------------------
     public double[][] calc_dN_dX(int integralPointNumber) {
 
+
         for (int i = 0; i <size ; i++) { //i -numer funkcji ksztaltu;
-            dN_dXArray[integralPointNumber][i]=(1.0/calcDetJ(integralPointNumber))*((calcJacobi(integralPointNumber)[1][1]*ksiArray[integralPointNumber][i])-calcJacobi(integralPointNumber)[0][1]*etaArray[integralPointNumber][i]);
-        //    System.out.print(dN_dXArray[integralPointNumber][i]+"     ");
+            dN_dXArray[integralPointNumber][i]=(1.0/calcDetJ(integralPointNumber))*((calcJacobi(integralPointNumber)[1][0]*ksiArray[integralPointNumber][i])-calcJacobi(integralPointNumber)[1][1]*etaArray[integralPointNumber][i]);
+
         }
-       // System.out.println("");
         return dN_dXArray;
     }
     public double[][] calc_dN_dY(int integralPointNumber){
 
         for (int i = 0; i <size ; i++) {
 
-                dN_dYArray[integralPointNumber][i]= (1.0/calcDetJ(integralPointNumber) )* (calcJacobi(integralPointNumber)[0][0]*etaArray[integralPointNumber][i]-calcJacobi(integralPointNumber)[1][0]*ksiArray[integralPointNumber][i]);
+                dN_dYArray[integralPointNumber][i]= (1.0/calcDetJ(integralPointNumber) )* (calcJacobi(integralPointNumber)[0][0]*etaArray[integralPointNumber][i]-calcJacobi(integralPointNumber)[0][1]*ksiArray[integralPointNumber][i]);
         }
         return dN_dYArray;
 
@@ -152,29 +151,30 @@ public class UniversalElement {
     public double[][]  calcJacobi(int integralPointNumber){
         jacobiArray[0][0]=dx_dKsi( localPoints[integralPointNumber]);  //integralPointNumber - numer punku calkowania [0,1,2,3]
         jacobiArray[0][1]=dx_dEta(localPoints[integralPointNumber]);
-        jacobiArray[1][0]=dy_dKsi( localPoints[integralPointNumber]);
-        jacobiArray[1][1]=dy_dEta( localPoints[integralPointNumber]);
+        jacobiArray[1][0]=dy_dEta( localPoints[integralPointNumber]);
+        jacobiArray[1][1]=dy_dKsi( localPoints[integralPointNumber]);
        // print2DArray(jacobiArray,jacobiSize);
         return jacobiArray;
     }
     public double calcDetJ(int integralPointNumber){
-        return calcJacobi(integralPointNumber)[0][0] * calcJacobi(integralPointNumber)[1][1] - calcJacobi(integralPointNumber)[0][1] * calcJacobi(integralPointNumber)[1][0];
+        return dx_dKsi(localPoints[integralPointNumber]) * dy_dEta(localPoints[integralPointNumber]) - dy_dKsi(localPoints[integralPointNumber]) * dx_dEta(localPoints[integralPointNumber]);
     }
     public double[][] calcLocal_H_matrix(int integralPointNumber, int k) { //k-conductivity
         double[][] local_H_matrix=new double[size][size];
         for (int i = 0; i <size ; i++) {
             for (int j = 0; j <size ; j++) {
-                local_H_matrix[i][j]=k*calcDetJ(integralPointNumber)*(calc_dN_dX(integralPointNumber)[integralPointNumber][i]*calc_dN_dX(integralPointNumber)[integralPointNumber][j]+calc_dN_dY(integralPointNumber)[integralPointNumber][i]*calc_dN_dY(integralPointNumber)[integralPointNumber][j]);
+                local_H_matrix[i][j]=calcDetJ(integralPointNumber)*(calc_dN_dX(integralPointNumber)[integralPointNumber][i]*calc_dN_dX(integralPointNumber)[integralPointNumber][j]+calc_dN_dY(integralPointNumber)[integralPointNumber][i]*calc_dN_dY(integralPointNumber)[integralPointNumber][j]);
             }
         }
-     //   print2DArray(local_H_matrix,size);
         return local_H_matrix;
     }
     public double[][] calc_H_Matrix(int k,Node[] tempNodes) {
+        this.tempNodes=tempNodes;
+
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
 
-                H_Matrix[i][j] = (this.calcLocal_H_matrix(0, k)[i][j]) + (this.calcLocal_H_matrix(1, k)[i][j]) + (this.calcLocal_H_matrix(2, k)[i][j]) + (this.calcLocal_H_matrix(3, k)[i][j]);
+                H_Matrix[i][j] =k*((this.calcLocal_H_matrix(0, k)[i][j]) + (this.calcLocal_H_matrix(1, k)[i][j]) + (this.calcLocal_H_matrix(2, k)[i][j]) + (this.calcLocal_H_matrix(3, k)[i][j])) ;
             }
         }
 
@@ -186,29 +186,25 @@ public class UniversalElement {
     public void  calcShapeFunctions(){
         for (int i = 0; i < size; i++) {
 
-            tempShapeFunctions[i][0]=0.25 * (1 - localPoints[i].getX()) * (1 - localPoints[i].getY());
-            tempShapeFunctions[i][1]=0.25 * (1 + localPoints[i].getX()) * (1 - localPoints[i].getY());
-            tempShapeFunctions[i][2]=0.25 * (1 + localPoints[i].getX()) * (1 + localPoints[i].getY());
-            tempShapeFunctions[i][3]=0.25 * (1 - localPoints[i].getX()) * (1 + localPoints[i].getY());
+            shapeFunctions[i][0]=0.25 * (1 - localPoints[i].getX()) * (1 - localPoints[i].getY());
+            shapeFunctions[i][1]=0.25 * (1 + localPoints[i].getX()) * (1 - localPoints[i].getY());
+            shapeFunctions[i][2]=0.25 * (1 + localPoints[i].getX()) * (1 + localPoints[i].getY());
+            shapeFunctions[i][3]=0.25 * (1 - localPoints[i].getX()) * (1 + localPoints[i].getY());
         }
-    }
-    public double[][] calcLocal_C_matrix(int integralPointNumber,int c,int ro) {
-        for (int i = 0; i <size ; i++) {
-            for (int j = 0; j <size ; j++) {
-                local_C_matrix[i][j]=tempShapeFunctions[integralPointNumber][i]*tempShapeFunctions[integralPointNumber][j];//+(tempShapeFunctions[1][i]*tempShapeFunctions[1][j])+tempShapeFunctions[2][i]*(tempShapeFunctions[2][j])+(tempShapeFunctions[2][i]*tempShapeFunctions[2][j])+tempShapeFunctions[3][i]*tempShapeFunctions[3][j]);
-            }
-        }
-        System.out.println("Local C: ");
-        print2DArray(local_C_matrix,size);
-        return local_C_matrix;
+        System.out.println("Shape funs:");
+        print2DArray(shapeFunctions,size);
     }
     public double[][] calc_C_Matrix(int c,int ro,Node[] tempNodes){
-        for (int i = 0; i <size ; i++) {
-            for (int j = 0; j <size ; j++) {
-                C_Matrix[i][j]=c*ro*(this.calcLocal_C_matrix(0,c,ro)[i][j]+this.calcLocal_C_matrix(1,c,ro)[i][j]+this.calcLocal_C_matrix(2,c,ro)[i][j]+this.calcLocal_C_matrix(3,c,ro)[i][j]);
+        this.tempNodes=tempNodes;
+
+        C_Matrix=new double[size][size];
+
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    C_Matrix[i][j] =c*ro*((shapeFunctions[0][i] * shapeFunctions[0][j]*calcDetJ(0))+(shapeFunctions[1][i]* shapeFunctions[1][j]*calcDetJ(1))+(shapeFunctions[2][i]* shapeFunctions[2][j]*calcDetJ(2))+(shapeFunctions[3][i]* shapeFunctions[3][j]*calcDetJ(3)));
+                }
             }
-        }
-        System.out.println("C Matrix");
+
 
     return C_Matrix;
     }
