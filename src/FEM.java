@@ -3,6 +3,7 @@
 import org.la4j.LinearAlgebra;
 import org.la4j.Matrix;
 import org.la4j.Vector;
+import org.la4j.linear.GaussianSolver;
 
 import java.awt.geom.Point2D;
 import java.util.HashMap;
@@ -36,38 +37,52 @@ public class FEM implements Runnable {
         H_Matrix = new double[finalSize][finalSize];
         C_Matrix = new double[finalSize][finalSize];
         P_Vector=new double[finalSize];
-
-    //    Matrix H_samo=Matrix.from2DArray(grid.getH_Global_Matrix());
-       // System.out.println("\nH_samo");
-    //    System.out.println(H_samo);
-        double[] t0Array = new double[finalSize];
+        int numberOfSteps=(int)(globalData.getSimTime()/globalData.getSimStepTime());
+        double[] tArray = new double[finalSize];
+        //ustawiamy wektor poczatkowy z temperaturą
 
 
-        System.out.println("\n\nStep: "+globalData.getSimStepTime());
 
-        for (int i = 0; i < finalSize; i++) {
-            for (int j = 0; j < finalSize; j++) {
-                H_Matrix[i][j] = grid.getH_Global_Matrix()[i][j] + (grid.getC_Global_Matrix()[i][j])/globalData.getSimStepTime();
-                C_Matrix[i][j] = grid.getC_Global_Matrix()[i][j]/globalData.getSimStepTime() ;
-
-            }
-        }
-        System.out.println("mjsjsdjfaejkkaehsfjdalklajdfsjbhjskdkjlaljsfdjdkjdsdldasnf");
+        Vector INITIAL_TEMP_VECTOR=Vector.fromArray(tArray);
         for (int i = 0; i <finalSize ; i++) {
-            for (int j = 0; j <finalSize ; j++) {
-
-                System.out.print(H_Matrix[i][j]+"   ");
-            }
-            System.out.println();
+            INITIAL_TEMP_VECTOR.set(i,globalData.getTInitial());
         }
-        System.out.println("\nTime[s]\t\tMinTemp[C]\tMaxTemp[C]");
-        for (int k = 0; k< 10; k++) {
+        int k=1;
 
-            for (int j = 0; j < grid.getNodes().length; j++) {
-                t0Array[j] = grid.getNodes()[j].getT();
-            }
+        H_Matrix=grid.getH_Global_Matrix();
+        C_Matrix=grid.getC_Global_Matrix();
+        P_Vector=grid.getP_Global_Vector();
 
+        System.out.println("\nTime[s]\t\tMinTemp[C]\t\t\t\tMaxTemp[C]");
+        for (int i = 0; i <globalData.getSimTime()/globalData.getSimStepTime();  i++) {
+
+
+            Matrix H_FINAL_MATRIX=Matrix.from2DArray(H_Matrix);
+
+            Matrix C_FINAL_MATRIX=Matrix.from2DArray(C_Matrix);
+            C_FINAL_MATRIX=C_FINAL_MATRIX.divide(globalData.getSimStepTime());
+
+            Vector P_FINAL_VECTOR=Vector.fromArray(P_Vector).multiply(-1);
+            P_FINAL_VECTOR=P_FINAL_VECTOR.add(C_FINAL_MATRIX.multiply(INITIAL_TEMP_VECTOR));
+
+            H_FINAL_MATRIX=H_FINAL_MATRIX.add(C_FINAL_MATRIX);
+
+            GaussianSolver gaussianSolver=new GaussianSolver(H_FINAL_MATRIX);
+            Vector temps=gaussianSolver.solve(P_FINAL_VECTOR);
+         //   System.out.println(temps);
+            double tMax= temps.max();
+            double tMin=temps.min();
+
+            System.out.println(k*globalData.getSimStepTime()+"\t\t"+tMin+"\t\t"+tMax);
+            k++;
+
+            INITIAL_TEMP_VECTOR=temps;
         }
+
+
+
+
+
     }
 
 }
