@@ -1,6 +1,3 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-
 public class Grid {
     private Node[] nodes;
     private Element[] elements;
@@ -9,18 +6,24 @@ public class Grid {
     private double[][] H_Global_Matrix;
     private double[][] C_Global_Matrix;
 
-    public Grid(GlobalData globalData) {
+    public Grid(GlobalData globalData,UniversalElement universalElement) {
         this.nodes=new Node[globalData.getnN()];
         this.elements=new Element[globalData.getnE()];
         elements=calcElements(globalData);
-        calcNodes(globalData);
+        nodes=calcNodes(globalData);
+        P_Global_Vector=new double[globalData.getnN()];
+        H_Global_Matrix=new double[globalData.getnN()][globalData.getnN()];
+        C_Global_Matrix=new double[globalData.getnN()][globalData.getnN()];
+
         printElements(globalData);
         printNodes(globalData);
+        setLocalValuesForElements(globalData,universalElement,(int)globalData.getAlfa(),(int)globalData.getC(),(int)globalData.getRo(),(int)globalData.getK(),globalData.getAmbientTemp());
+        aggregation(globalData,universalElement);
     }
     public Element[] calcElements(GlobalData globalData){
         int[] arrOfNodesIndexes;
         int counter=0;
-        Element tempElement=new Element();
+        Element tempElement;
 
         for (int i = 0; i < globalData.getnE(); i++) //dla każdego elementu:
         {
@@ -43,7 +46,7 @@ public class Grid {
           System.out.println(elements[i].toString());
       }
     }
-    public void calcNodes(GlobalData globalData){
+    public Node[] calcNodes(GlobalData globalData){
         double x=0;
         double y=0;
         double deltaX=globalData.getW()/(globalData.getnW()-1);
@@ -60,57 +63,53 @@ public class Grid {
                     } else {
                         tempNode.setBC(false);
                     }
-
                     nodes[k]=tempNode;
                     k++;
-
-
                 }
             }
-
-
+            return  nodes;
     }
-    public void setLocalValuesForElements(GlobalData globalData,UniversalElement universalElement,int alfa,int c,int ro,int k){
+    public void setLocalValuesForElements(GlobalData globalData,UniversalElement universalElement,int alfa,int c,int ro,int k,double tAmbient){
         Node[] tempNodes=new Node[size];
         for (int i = 0; i <globalData.getnE() ; i++) {
-            for(int j=0;j<4;j++){
+            for(int j=0;j<size;j++){
                 tempNodes[j] = nodes[elements[i].getIdOfNodes()[j]];
             }
-            elements[i].setLocal_H_Matrix(universalElement.calc_H_Matrix(k,tempNodes));
+            System.out.println("\n\nElement:"+i);
+            elements[i].setLocal_H_Matrix(universalElement.calc_H_Hbc_Matrix(k,tempNodes,alfa));
             elements[i].setLocal_C_Matrix(universalElement.calc_C_Matrix(c,ro,tempNodes));
-            elements[i].setLocal_P_Vector(universalElement.calc_P_Vector(alfa,i,tempNodes));
-
+            elements[i].setLocal_P_Vector(universalElement.calc_P_Vector(alfa,tempNodes,tAmbient));
         }
     }
-    public void aggregation(GlobalData globalData,Grid grid,UniversalElement universalElement){
-        P_Global_Vector=new double[globalData.getnN()];
-        H_Global_Matrix=new double[globalData.getnN()][globalData.getnN()];
-        C_Global_Matrix=new double[globalData.getnN()][globalData.getnN()];
-        for (int i = 0; i < globalData.getnE(); i++) {
-            int[] id=new int[size];
-            for (int j = 0; j <size ; j++) {
-                id[j]=grid.getElements()[i].getIdOfNodes()[j];
-            }
-            for (int j = 0; j <size ; j++) {
-                P_Global_Vector[id[j]] += grid.getElements()[i].getLocal_P_Vector()[j];
+    public void aggregation(GlobalData globalData,UniversalElement universalElement){
 
-                for (int k = 0; k <size ; k++) {
-                    H_Global_Matrix[id[k]][id[j]]+=grid.getElements()[i].getLocal_H_Matrix()[k][j];
-                    C_Global_Matrix[id[k]][id[j]]+=grid.getElements()[i].getLocal_C_Matrix()[k][j];
+
+        for (int i = 0; i < globalData.getnE(); i++) {
+            int[] id = new int[size];
+            for (int j = 0; j < size; j++) {
+                id[j] = elements[i].getIdOfNodes()[j];
+            }
+            for (int j = 0; j < size; j++) {
+                P_Global_Vector[id[j]] += elements[i].getLocal_P_Vector()[j];
+            }
+
+            for (int k = 0; k < size; k++) {
+                for (int j = 0; j < size; j++) {
+
+                    H_Global_Matrix[id[k]][id[j]] += elements[i].getLocal_H_Matrix()[k][j];
+                    C_Global_Matrix[id[k]][id[j]] += elements[i].getLocal_C_Matrix()[k][j];
                 }
             }
         }
-
-
 
         System.out.println("H Matrix:");
         universalElement.print2DArray(H_Global_Matrix,globalData.getnN());
         System.out.println("C Matrix:");
         universalElement.print2DArray(C_Global_Matrix,globalData.getnN());
-//        System.out.println("P Vector:");
-//        for (int i = 0; i <globalData.getnN() ; i++) {
-//            System.out.println(P_Global_Vector[i]+"     ");
-//        }
+        System.out.println("P Vector nana:");
+        for (int i = 0; i <globalData.getnN() ; i++) {
+            System.out.print(P_Global_Vector[i]+"     ");
+        }
     }
     public void printNodes(GlobalData globalData){
         for (int i = 0; i <globalData.getnN() ; i++) {
@@ -132,5 +131,37 @@ public class Grid {
 
     public void setElements(Element[] elements) {
         this.elements = elements;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public double[] getP_Global_Vector() {
+        return P_Global_Vector;
+    }
+
+    public void setP_Global_Vector(double[] p_Global_Vector) {
+        P_Global_Vector = p_Global_Vector;
+    }
+
+    public double[][] getH_Global_Matrix() {
+        return H_Global_Matrix;
+    }
+
+    public void setH_Global_Matrix(double[][] h_Global_Matrix) {
+        H_Global_Matrix = h_Global_Matrix;
+    }
+
+    public double[][] getC_Global_Matrix() {
+        return C_Global_Matrix;
+    }
+
+    public void setC_Global_Matrix(double[][] c_Global_Matrix) {
+        C_Global_Matrix = c_Global_Matrix;
     }
 }
