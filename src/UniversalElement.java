@@ -33,15 +33,10 @@ public class UniversalElement {
         this.H_Matrix=new double[size][size];
         this.C_Matrix=new double[size][size];
 
-       // calcGlobalPoints();
+
         calcLocalPoints();
         calcShapeFunctions();
-
-        System.out.println("\nShape Funcions Array");
-       // calcShapeFunctions();
-        System.out.println("\ndN_dKsi Array");
         calcKsiArray();
-        System.out.println("\ndN_dEta Array");
         calcEtaArray();
 
     }
@@ -61,7 +56,7 @@ public class UniversalElement {
           ksiArray[i][2]=calc_dN3_dKsi(localPoints[i]);
           ksiArray[i][3]=calc_dN4_dKsi(localPoints[i]);
         }
-        print2DArray(ksiArray,size);
+
     }
     public void calcEtaArray(){
 
@@ -71,7 +66,7 @@ public class UniversalElement {
             etaArray[i][2]=calc_dN3_dEta(localPoints[i]);
             etaArray[i][3]=calc_dN4_dEta(localPoints[i]);
         }
-        print2DArray(etaArray,size);
+
     }
     public void print2DArray(double[][] array2D,int size){
         for (int i = 0; i <size ; i++) {
@@ -179,8 +174,6 @@ public class UniversalElement {
             }
         }
 
-
-      print2DArray(H_Matrix, size);
         return H_Matrix;
     }
     //------------------------------Macierz C-----------------------------------------------------------
@@ -264,10 +257,6 @@ public class UniversalElement {
             Point2D.Double pc2R = new Point2D.Double(1, 1 / Math.sqrt(3));
             l = calcL(1, 2,tempNodes);
             detJ1D = calcDetJ1D(l);
-            for (int i = 0; i <size ; i++) {
-                shapeArray1[i]=0;
-                shapeArray2[i]=0;
-            }
 
             Vector s1=Vector.fromArray(shapeArray1);
             s1.set(0,0.25 * (1 - pc1R.getX()) * (1 - pc1R.getY()));
@@ -294,10 +283,6 @@ public class UniversalElement {
             Point2D.Double pc2U = new Point2D.Double(1 / Math.sqrt(3), 1);
             l = calcL(2, 3,tempNodes);
             detJ1D = calcDetJ1D(l);
-            for (int i = 0; i <size ; i++) {
-                shapeArray1[i]=0;
-                shapeArray2[i]=0;
-            }
 
             Vector s1=Vector.fromArray(shapeArray1);
             s1.set(0,0.25 * (1 - pc1U.getX()) * (1 - pc1U.getY()));
@@ -322,10 +307,6 @@ public class UniversalElement {
             Point2D.Double pc2L = new Point2D.Double(-1, 1 / Math.sqrt(3));
             l = calcL(3, 0,tempNodes);
             detJ1D = calcDetJ1D(l);
-            for (int i = 0; i <size ; i++) {
-                shapeArray1[i]=0;
-                shapeArray2[i]=0;
-            }
             Vector s1=Vector.zero(4);
             s1.set(0,0.25 * (1 - pc1L.getX()) * (1 - pc1L.getY()));
             s1.set(1,0.25 * (1 + pc1L.getX()) * (1 - pc1L.getY()));

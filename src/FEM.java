@@ -6,10 +6,13 @@ import org.la4j.Vector;
 import org.la4j.linear.GaussianSolver;
 
 import java.awt.geom.Point2D;
+import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.Scanner;
 
 
 public class FEM implements Runnable {
+    private static DecimalFormat df2 = new DecimalFormat("#.##");
     private int size;
     private int finalSize;
     private double[][] H_Matrix;
@@ -23,11 +26,29 @@ public class FEM implements Runnable {
 
     @Override
     public void run() {
-        GlobalData globalData = new GlobalData();
+        String simData="";
+        int numberOfSimulation=-1;
+        System.out.println("Which simulation (1 or 2)?");
+        try {
+            Scanner input = new Scanner(System.in);
+             numberOfSimulation= input.nextInt();
+        } catch (Exception e) {
+            e.getMessage();
+        }
+            switch (numberOfSimulation) {
+                case 1:
+                    simData = "data.txt";
+                    break;
+                case 2:
+                    simData = "data2.txt";
+                    break;
+            }
+
+        GlobalData globalData = new GlobalData(simData);
         System.out.println(globalData.toString());
         UniversalElement universalElement = new UniversalElement(); //tworzymy element
         Grid grid = new Grid(globalData, universalElement); //tworzymy siatke
-        simulation(grid,globalData);
+        simulation(grid, globalData);
 
 
     }
@@ -53,7 +74,7 @@ public class FEM implements Runnable {
         C_Matrix=grid.getC_Global_Matrix();
         P_Vector=grid.getP_Global_Vector();
 
-        System.out.println("\nTime[s]\t\tMinTemp[C]\t\t\t\tMaxTemp[C]");
+        System.out.println("\nTime[s]\tMinTemp[C]\tMaxTemp[C]");
         for (int i = 0; i <globalData.getSimTime()/globalData.getSimStepTime();  i++) {
 
 
@@ -69,11 +90,12 @@ public class FEM implements Runnable {
 
             GaussianSolver gaussianSolver=new GaussianSolver(H_FINAL_MATRIX);
             Vector temps=gaussianSolver.solve(P_FINAL_VECTOR);
+
          //   System.out.println(temps);
             double tMax= temps.max();
             double tMin=temps.min();
 
-            System.out.println(k*globalData.getSimStepTime()+"\t\t"+tMin+"\t\t"+tMax);
+            System.out.println((int)(k*globalData.getSimStepTime())+"\t\t"+df2.format(tMin)+"\t\t\t"+df2.format(tMax));
             k++;
 
             INITIAL_TEMP_VECTOR=temps;

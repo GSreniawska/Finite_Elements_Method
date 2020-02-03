@@ -1,0 +1,12 @@
+H=0.100
+W=0.100
+nH=31
+nW=31
+alfa=300
+k=25
+c=700
+ro=7800
+tInitial=100
+simTime=100
+simStepTime=1
+ambientTemp=1200

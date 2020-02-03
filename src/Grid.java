@@ -75,7 +75,6 @@ public class Grid {
             for(int j=0;j<size;j++){
                 tempNodes[j] = nodes[elements[i].getIdOfNodes()[j]];
             }
-            System.out.println("\n\nElement:"+i);
             elements[i].setLocal_H_Matrix(universalElement.calc_H_Hbc_Matrix(k,tempNodes,alfa));
             elements[i].setLocal_C_Matrix(universalElement.calc_C_Matrix(c,ro,tempNodes));
             elements[i].setLocal_P_Vector(universalElement.calc_P_Vector(alfa,tempNodes,tAmbient));
@@ -100,15 +99,6 @@ public class Grid {
                     C_Global_Matrix[id[k]][id[j]] += elements[i].getLocal_C_Matrix()[k][j];
                 }
             }
-        }
-
-        System.out.println("H Matrix:");
-        universalElement.print2DArray(H_Global_Matrix,globalData.getnN());
-        System.out.println("C Matrix:");
-        universalElement.print2DArray(C_Global_Matrix,globalData.getnN());
-        System.out.println("P Vector nana:");
-        for (int i = 0; i <globalData.getnN() ; i++) {
-            System.out.print(P_Global_Vector[i]+"     ");
         }
     }
     public void printNodes(GlobalData globalData){

@@ -24,16 +24,16 @@ public class GlobalData {
     private double simStepTime;
     private double ambientTemp;
 
-    public GlobalData() {
-        readDataFromFile();
+    public GlobalData(String simulation) {
+        readDataFromFile( simulation);
     }
 
     //wczytanie danych z pliku
 
-    public void readDataFromFile() {
+    public void readDataFromFile(String simulation) {
 
         try {
-            File file = new File("F:\\Java\\Projects\\Sreniawska_Gabriela_MES\\data.txt");
+            File file = new File("F:\\Java\\Projects\\Sreniawska_Gabriela_MES\\"+simulation);
             BufferedReader br = new BufferedReader(new FileReader((file)));
             String[] tempArr=new String[2];
             HashMap<String,String> mapOfData=new HashMap<>();
