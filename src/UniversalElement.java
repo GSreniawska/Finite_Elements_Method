@@ -223,7 +223,6 @@ public class UniversalElement {
                 sumPC_H_BCArray[i][j]=0;
             }
         }
-        Matrix sumHBC=Matrix.from2DArray(sumPC_H_BCArray);
 
 
         if (tempNodes[0].isBC() && tempNodes[1].isBC()) {
@@ -231,8 +230,8 @@ public class UniversalElement {
 
             detJ1D = calcDetJ1D(l);
 
-            Point2D.Double pc1B = new Point2D.Double((-1 / Math.sqrt(3)), -1.);
-            Point2D.Double pc2B = new Point2D.Double((1 / Math.sqrt(3)), -1.);
+            Point2D.Double pc1B = new Point2D.Double((-1. / Math.sqrt(3)), -1.);
+            Point2D.Double pc2B = new Point2D.Double((1. / Math.sqrt(3)), -1.);
 
             Vector s1=Vector.fromArray(shapeArray1);
             s1.set(0,0.25 * (1 - pc1B.getX()) * (1 - pc1B.getY()));
@@ -253,8 +252,8 @@ public class UniversalElement {
             }
         }
         if (tempNodes[1].isBC() && tempNodes[2].isBC()) {
-            Point2D.Double pc1R = new Point2D.Double(1, -1 / Math.sqrt(3));
-            Point2D.Double pc2R = new Point2D.Double(1, 1 / Math.sqrt(3));
+            Point2D.Double pc1R = new Point2D.Double(1., -1 / Math.sqrt(3));
+            Point2D.Double pc2R = new Point2D.Double(1., 1 / Math.sqrt(3));
             l = calcL(1, 2,tempNodes);
             detJ1D = calcDetJ1D(l);
 
@@ -279,8 +278,8 @@ public class UniversalElement {
 
         }
         if (tempNodes[2].isBC() && tempNodes[3].isBC()) {
-            Point2D.Double pc1U = new Point2D.Double(-1 / Math.sqrt(3), 1);
-            Point2D.Double pc2U = new Point2D.Double(1 / Math.sqrt(3), 1);
+            Point2D.Double pc2U = new Point2D.Double(-1. / Math.sqrt(3), 1.);
+            Point2D.Double pc1U = new Point2D.Double(1. / Math.sqrt(3), 1.);
             l = calcL(2, 3,tempNodes);
             detJ1D = calcDetJ1D(l);
 
@@ -303,8 +302,8 @@ public class UniversalElement {
             }
         }
         if (tempNodes[3].isBC() && tempNodes[0].isBC()) {
-            Point2D.Double pc1L = new Point2D.Double(-1, -1 / Math.sqrt(3));
-            Point2D.Double pc2L = new Point2D.Double(-1, 1 / Math.sqrt(3));
+            Point2D.Double pc2L = new Point2D.Double(-1., -1. / Math.sqrt(3));
+            Point2D.Double pc1L = new Point2D.Double(-1., 1. / Math.sqrt(3));
             l = calcL(3, 0,tempNodes);
             detJ1D = calcDetJ1D(l);
             Vector s1=Vector.zero(4);
@@ -323,7 +322,8 @@ public class UniversalElement {
 
             for (int i = 0; i < size; i++) {
                 for (int j = 0; j < size; j++) {
-                    sumPC_H_BCArray[i][j] += (s1.get(i)*s1.get(j)+(s2.get(i)*s2.get(j)))*(detJ1D) ;
+                    sumPC_H_BCArray[i][j] += ((s1.get(i)*s1.get(j))+(s2.get(i)*s2.get(j)))*(detJ1D) ;
+
                 }
             }
 
@@ -331,7 +331,7 @@ public class UniversalElement {
         for (int i = 0; i <size ; i++) {
             for (int j = 0; j <size ; j++) {
                 sumPC_H_BCArray[i][j]*=alfa;
-            }
+            };
         }
 
       return sumPC_H_BCArray;
@@ -340,16 +340,17 @@ public class UniversalElement {
         return Math.sqrt(Math.pow(tempNodes[i1].getX()-tempNodes[i2].getX(),2)+Math.pow(tempNodes[i1].getY()-tempNodes[i2].getY(),2));
     }
     public double[][] calc_H_Hbc_Matrix(int k,Node[] tempNodes,int alfa) {
+        double[][] H_final=new double[size][size];
         double[][] H_BC_matrix= calcLocal_H_BC_matrix(alfa,tempNodes);
-        double[][] H_matrix= calc_H_Matrix(k,tempNodes);
+        double[][] H_m= calc_H_Matrix(k,tempNodes);
 
         for (int i = 0; i <size ; i++) {
             for (int j = 0; j <size ; j++) {
-                H_matrix[i][j]+=H_BC_matrix[i][j];
+                H_final[i][j]=H_m[i][j]+H_BC_matrix[i][j];
             }
         }
 
-        return H_matrix;
+        return H_final;
     }
     //-------------------------------Wektor P -----------------------------------------------------------
     public double[] calc_P_Vector(int alfa,  Node[] tempNodes, double tAmbient){
@@ -365,49 +366,48 @@ public class UniversalElement {
 
         if (tempNodes[0].isBC() && tempNodes[1].isBC()) {
 
-            l = calcL(0, 1,tempNodes);
+            l = calcL(0, 1, tempNodes);
             detJ1D = calcDetJ1D(l);
-            Point2D.Double pc1B = new Point2D.Double((-1 / Math.sqrt(3)), -1.);
-            Point2D.Double pc2B = new Point2D.Double((1 / Math.sqrt(3)), -1.);
-            Vector p1=Vector.fromArray(shapeVector1);
+            Point2D.Double pc1B = new Point2D.Double((-1. / Math.sqrt(3)), -1.);
+            Point2D.Double pc2B = new Point2D.Double((1. / Math.sqrt(3)), -1.);
 
-            p1.set(0,0.25 * (1 - pc1B.getX()) * (1 - pc1B.getY()));
-            p1.set(1,0.25 * (1 + pc1B.getX()) * (1 - pc1B.getY()));
-             p1.set(2,0.25 * (1 + pc1B.getX()) * (1 + pc1B.getY())) ;
-            p1.set(3,0.25 * (1 - pc1B.getX()) * (1 + pc1B.getY()));
+            Vector p1 = Vector.fromArray(shapeVector1);
+            p1.set(0, 0.25 * (1 - pc1B.getX()) * (1 - pc1B.getY()));
+            p1.set(1, 0.25 * (1 + pc1B.getX()) * (1 - pc1B.getY()));
+            p1.set(2, 0.25 * (1 + pc1B.getX()) * (1 + pc1B.getY()));
+            p1.set(3, 0.25 * (1 - pc1B.getX()) * (1 + pc1B.getY()));
             //   print2DArray(shapeArray1, size);
 
-           Vector p2=Vector.fromArray(shapeVector2);
-            p2.set(0,0.25 * (1 - pc2B.getX()) * (1 - pc2B.getY())) ;
-            p2.set(1,0.25 * (1 + pc2B.getX()) * (1 - pc2B.getY())) ;
-            p2.set(2,0.25 * (1 + pc2B.getX()) * (1 + pc2B.getY()));
-             p2.set(3,0.25 * (1 - pc2B.getX()) * (1 + pc2B.getY())) ;
+            Vector p2 = Vector.fromArray(shapeVector2);
+            p2.set(0, 0.25 * (1 - pc2B.getX()) * (1 - pc2B.getY()));
+            p2.set(1, 0.25 * (1 + pc2B.getX()) * (1 - pc2B.getY()));
+            p2.set(2, 0.25 * (1 + pc2B.getX()) * (1 + pc2B.getY()));
+            p2.set(3, 0.25 * (1 - pc2B.getX()) * (1 + pc2B.getY()));
             //   print2DArray(shapeArray2, size);
             for (int i = 0; i < size; i++) {
-                    sumP_Vectors[i] += (p1.get(i) + p2.get(i)) * detJ1D;
+                sumP_Vectors[i] += (p1.get(i) + p2.get(i)) * detJ1D;
             }
 
         }
         if (tempNodes[1].isBC() && tempNodes[2].isBC()) {
 
-            Point2D.Double pc1R = new Point2D.Double(1, -1 / Math.sqrt(3));
-            Point2D.Double pc2R = new Point2D.Double(1, 1 / Math.sqrt(3));
-            l = calcL(1, 2,tempNodes);
+            Point2D.Double pc1R = new Point2D.Double(1., -1. / Math.sqrt(3));
+            Point2D.Double pc2R = new Point2D.Double(1., 1. / Math.sqrt(3));
+            l = calcL(1, 2, tempNodes);
             detJ1D = calcDetJ1D(l);
 
-            Vector p1=Vector.fromArray(shapeVector1);
-
-            p1.set(0,0.25 * (1 - pc1R.getX()) * (1 - pc1R.getY()));
-            p1.set(1,0.25 * (1 + pc1R.getX()) * (1 - pc1R.getY()));
-            p1.set(2,0.25 * (1 + pc1R.getX()) * (1 + pc1R.getY())) ;
-            p1.set(3,0.25 * (1 - pc1R.getX()) * (1 + pc1R.getY()));
+            Vector p1 = Vector.fromArray(shapeVector1);
+            p1.set(0, 0.25 * (1 - pc1R.getX()) * (1 - pc1R.getY()));
+            p1.set(1, 0.25 * (1 + pc1R.getX()) * (1 - pc1R.getY()));
+            p1.set(2, 0.25 * (1 + pc1R.getX()) * (1 + pc1R.getY()));
+            p1.set(3, 0.25 * (1 - pc1R.getX()) * (1 + pc1R.getY()));
             //   print2DArray(shapeArray1, size);
 
-            Vector p2=Vector.fromArray(shapeVector2);
-            p2.set(0,0.25 * (1 - pc2R.getX()) * (1 - pc2R.getY())) ;
-            p2.set(1,0.25 * (1 + pc2R.getX()) * (1 - pc2R.getY())) ;
-            p2.set(2,0.25 * (1 + pc2R.getX()) * (1 + pc2R.getY()));
-            p2.set(3,0.25 * (1 - pc2R.getX()) * (1 + pc2R.getY())) ;
+            Vector p2 = Vector.fromArray(shapeVector2);
+            p2.set(0, 0.25 * (1 - pc2R.getX()) * (1 - pc2R.getY()));
+            p2.set(1, 0.25 * (1 + pc2R.getX()) * (1 - pc2R.getY()));
+            p2.set(2, 0.25 * (1 + pc2R.getX()) * (1 + pc2R.getY()));
+            p2.set(3, 0.25 * (1 - pc2R.getX()) * (1 + pc2R.getY()));
             // print2DArray(shapeArray2, size);
 
             for (int i = 0; i < size; i++) {
@@ -415,8 +415,8 @@ public class UniversalElement {
             }
         }
         if (tempNodes[2].isBC() && tempNodes[3].isBC()) {
-            Point2D.Double pc1U = new Point2D.Double(-1 / Math.sqrt(3), 1);
-            Point2D.Double pc2U = new Point2D.Double(1 / Math.sqrt(3), 1);
+            Point2D.Double pc2U = new Point2D.Double(-1. / Math.sqrt(3), 1.);
+            Point2D.Double pc1U = new Point2D.Double(1. / Math.sqrt(3), 1.);
             l = calcL(2, 3,tempNodes);
             detJ1D = calcDetJ1D(l);
 
@@ -439,13 +439,12 @@ public class UniversalElement {
             }
         }
         if (tempNodes[3].isBC() && tempNodes[0].isBC()) {
-            Point2D.Double pc1L = new Point2D.Double(-1, -1 / Math.sqrt(3));
-            Point2D.Double pc2L = new Point2D.Double(-1, 1 / Math.sqrt(3));
+            Point2D.Double pc2L = new Point2D.Double(-1., -1. / Math.sqrt(3));
+            Point2D.Double pc1L = new Point2D.Double(-1., 1. / Math.sqrt(3));
             l = calcL(3, 0,tempNodes);
             detJ1D = calcDetJ1D(l);
 
             Vector p1=Vector.fromArray(shapeVector1);
-
             p1.set(0,0.25 * (1 - pc1L.getX()) * (1 - pc1L.getY()));
             p1.set(1,0.25 * (1 + pc1L.getX()) * (1 - pc1L.getY()));
             p1.set(2,0.25 * (1 + pc1L.getX()) * (1 + pc1L.getY())) ;
@@ -466,7 +465,10 @@ public class UniversalElement {
         for (int i = 0; i <size ; i++) {
 
             sumP_Vectors[i]=sumP_Vectors[i]*tAmbient*(-alfa);
+            System.out.print(sumP_Vectors[i]+"    ");
         }
+        System.out.println("");
+
         return sumP_Vectors;
     }
 

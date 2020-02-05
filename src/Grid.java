@@ -1,3 +1,5 @@
+import org.la4j.Vector;
+
 public class Grid {
     private Node[] nodes;
     private Element[] elements;
@@ -5,6 +7,7 @@ public class Grid {
     private double[] P_Global_Vector;
     private double[][] H_Global_Matrix;
     private double[][] C_Global_Matrix;
+    private int finalsize=16;
 
     public Grid(GlobalData globalData,UniversalElement universalElement) {
         this.nodes=new Node[globalData.getnN()];
@@ -70,8 +73,9 @@ public class Grid {
             return  nodes;
     }
     public void setLocalValuesForElements(GlobalData globalData,UniversalElement universalElement,int alfa,int c,int ro,int k,double tAmbient){
-        Node[] tempNodes=new Node[size];
+
         for (int i = 0; i <globalData.getnE() ; i++) {
+            Node[] tempNodes=new Node[size];
             for(int j=0;j<size;j++){
                 tempNodes[j] = nodes[elements[i].getIdOfNodes()[j]];
             }
@@ -82,7 +86,6 @@ public class Grid {
     }
     public void aggregation(GlobalData globalData,UniversalElement universalElement){
 
-
         for (int i = 0; i < globalData.getnE(); i++) {
             int[] id = new int[size];
             for (int j = 0; j < size; j++) {
@@ -91,15 +94,15 @@ public class Grid {
             for (int j = 0; j < size; j++) {
                 P_Global_Vector[id[j]] += elements[i].getLocal_P_Vector()[j];
             }
+            for (int j = 0; j <size ; j++) {
 
-            for (int k = 0; k < size; k++) {
-                for (int j = 0; j < size; j++) {
-
-                    H_Global_Matrix[id[k]][id[j]] += elements[i].getLocal_H_Matrix()[k][j];
-                    C_Global_Matrix[id[k]][id[j]] += elements[i].getLocal_C_Matrix()[k][j];
+                for (int k = 0; k < size; k++) {
+                    H_Global_Matrix[id[j]][id[k]] += elements[i].getLocal_H_Matrix()[j][k];
+                    C_Global_Matrix[id[j]][id[k]] += elements[i].getLocal_C_Matrix()[j][k];
                 }
             }
         }
+
     }
     public void printNodes(GlobalData globalData){
         for (int i = 0; i <globalData.getnN() ; i++) {
