@@ -1,6 +1,10 @@
 import org.la4j.Vector;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 public class Grid {
+    DecimalFormat formatter = new DecimalFormat("#0.000");
     private Node[] nodes;
     private Element[] elements;
     private int size=4;
@@ -61,7 +65,9 @@ public class Grid {
 
             for (int i = 0; i < globalData.getnW(); i++) {
                 for (int j = 0; j < globalData.getnH(); j++) {
-                    tempNode = new Node(k, i * deltaX, j * deltaY, globalData.getTInitial());
+                    tempNode = new Node(k, (double)Math.round(i*deltaX * 100000d) / 100000d
+                            ,(double)Math.round(j*deltaY * 100000d) / 100000d
+                            , globalData.getTInitial());
 
                     if (tempNode.getX() == 0 || tempNode.getY() == 0 || tempNode.getX() == globalData.getW() || tempNode.getY() == globalData.getH()) {
                         tempNode.setBC(true);
@@ -91,7 +97,7 @@ public class Grid {
             Node[] tempNodes = new Node[size];
             for (int j = 0; j < size; j++) {
                 tempNodes[j] = nodes[elements[i].getIdOfNodes()[j]];
-                if (tempNodes[j].getX() == 0 && tempNodes[j + 1].getX() == deltaX) { //1 element na szerokosc
+                if (tempNodes[j].getX() <=deltaX) { //1 element na szerokosc
 
                     k = (int) globalData.getkMetalSheet();
                     c = (int) globalData.getcMetalSheet();
@@ -114,6 +120,7 @@ public class Grid {
             elements[i].setLocal_H_Matrix(universalElement.calc_H_Hbc_Matrix(k,tempNodes,alfa));
             elements[i].setLocal_C_Matrix(universalElement.calc_C_Matrix(c,ro,tempNodes));
             elements[i].setLocal_P_Vector(universalElement.calc_P_Vector(alfa,tempNodes,tAmbient));
+
         }
     }
     public void aggregation(GlobalData globalData,UniversalElement universalElement){
@@ -134,6 +141,7 @@ public class Grid {
                 }
             }
         }
+
 
     }
     public void printNodes(GlobalData globalData){

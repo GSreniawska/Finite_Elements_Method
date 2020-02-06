@@ -349,7 +349,8 @@ public class UniversalElement {
                 H_final[i][j]=H_m[i][j]+H_BC_matrix[i][j];
             }
         }
-
+        System.out.println("");
+        print2DArray(H_final,size);
         return H_final;
     }
     //-------------------------------Wektor P -----------------------------------------------------------
@@ -462,12 +463,7 @@ public class UniversalElement {
                     sumP_Vectors[i] += (p1.get(i)+p2.get(i)) * detJ1D;
             }
         }
-        for (int i = 0; i <size ; i++) {
 
-            sumP_Vectors[i]=sumP_Vectors[i]*tAmbient*(-alfa);
-            System.out.print(sumP_Vectors[i]+"    ");
-        }
-        System.out.println("");
 
         return sumP_Vectors;
     }
