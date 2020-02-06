@@ -16,17 +16,21 @@ public class GlobalData {
 
     private double alfa;    //dane materialowe
 
-    private double kMetalSheet;
-    private double cMetalSheet;
-    private double roMetalSheet;
+    private double kGypsumPlaster;
+    private double cGypsumPlaster;
+    private double roGypsumPlaster;
 
-    private double kDiatEarth;
-    private double cDiatEarth;
-    private double roDiatEarth;
+    private double kSolidBrick;
+    private double cSolidBrick;
+    private double roSolidBrick;
 
-    private double kFireclay;
-    private double cFireclay;
-    private double roFireClay;
+    private double kStyrofoam;
+    private double cStyrofoam;
+    private double roStyrofoam;
+
+    private double kPlaster;
+    private double cPlaster;
+    private double roPlaster;
 
     private double tInitial;    //temperatura poczatkowa
     private double simTime;
@@ -70,17 +74,21 @@ public class GlobalData {
         setnN(nH*nW);
         setAlfa(Double.parseDouble(mapOfData.get("alfa")));
 
-        setkDiatEarth(Double.parseDouble(mapOfData.get("kDiatEarth")));
-        setcDiatEarth(Double.parseDouble(mapOfData.get("cDiatEarth")));
-        setRoDiatEarth(Double.parseDouble(mapOfData.get("roDiatEarth")));
+        setkSolidBrick(Double.parseDouble(mapOfData.get("kSolidBrick")));
+        setcSolidBrick(Double.parseDouble(mapOfData.get("cSolidBrick")));
+        setRoSolidBrick(Double.parseDouble(mapOfData.get("roSolidBrick")));
 
-        setkFireclay(Double.parseDouble(mapOfData.get("kFireclay")));
-        setcFireclay(Double.parseDouble(mapOfData.get("cFireclay")));
-        setRoFireClay(Double.parseDouble(mapOfData.get("roFireclay")));
+        setkPlaster(Double.parseDouble(mapOfData.get("kPlaster")));
+        setcPlaster(Double.parseDouble(mapOfData.get("cPlaster")));
+        setRoPlaster(Double.parseDouble(mapOfData.get("roPlaster")));
 
-        setkMetalSheet(Double.parseDouble(mapOfData.get("kMetalSheet")));
-        setcMetalSheet(Double.parseDouble(mapOfData.get("cMetalSheet")));
-        setRoMetalSheet(Double.parseDouble(mapOfData.get("roMetalSheet")));
+        setkGypsumPlaster(Double.parseDouble(mapOfData.get("kGypsumPlaster")));
+        setcGypsumPlaster(Double.parseDouble(mapOfData.get("cGypsumPlaster")));
+        setRoGypsumPlaster(Double.parseDouble(mapOfData.get("roGypsumPlaster")));
+
+        setkStyrofoam(Double.parseDouble(mapOfData.get("kStyrofoam")));
+        setcStyrofoam(Double.parseDouble(mapOfData.get("cStyrofoam")));
+        setRoStyrofoam(Double.parseDouble(mapOfData.get("roStyrofoam")));
 
         setTInitial(Double.parseDouble(mapOfData.get("tInitial")));
         setAmbientTemp(Double.parseDouble(mapOfData.get("ambientTemp")));
@@ -190,76 +198,102 @@ public class GlobalData {
 
 
 
-    public double getkMetalSheet() {
-        return kMetalSheet;
+    public double getkGypsumPlaster() {
+        return kGypsumPlaster;
     }
 
-    public void setkMetalSheet(double kMetalSheet) {
-        this.kMetalSheet = kMetalSheet;
+    public void setkGypsumPlaster(double kGypsumPlaster) {
+        this.kGypsumPlaster = kGypsumPlaster;
     }
 
-    public double getcMetalSheet() {
-        return cMetalSheet;
+    public double getcGypsumPlaster() {
+        return cGypsumPlaster;
     }
 
-    public void setcMetalSheet(double cMetalSheet) {
-        this.cMetalSheet = cMetalSheet;
+    public void setcGypsumPlaster(double cGypsumPlaster) {
+        this.cGypsumPlaster = cGypsumPlaster;
     }
 
-    public double getRoMetalSheet() {
-        return roMetalSheet;
+    public double getRoGypsumPlaster() {
+        return roGypsumPlaster;
     }
 
-    public void setRoMetalSheet(double roMetalSheet) {
-        this.roMetalSheet = roMetalSheet;
+    public void setRoGypsumPlaster(double roGypsumPlaster) {
+        this.roGypsumPlaster = roGypsumPlaster;
     }
 
-    public double getkDiatEarth() {
-        return kDiatEarth;
+    public double getkSolidBrick() {
+        return kSolidBrick;
     }
 
-    public void setkDiatEarth(double kDiatEarth) {
-        this.kDiatEarth = kDiatEarth;
+    public void setkSolidBrick(double kSolidBrick) {
+        this.kSolidBrick = kSolidBrick;
     }
 
-    public double getcDiatEarth() {
-        return cDiatEarth;
+    public double getcSolidBrick() {
+        return cSolidBrick;
     }
 
-    public void setcDiatEarth(double cDiatEarth) {
-        this.cDiatEarth = cDiatEarth;
+    public void setcSolidBrick(double cSolidBrick) {
+        this.cSolidBrick = cSolidBrick;
     }
 
-    public double getRoDiatEarth() {
-        return roDiatEarth;
+    public double getRoSolidBrick() {
+        return roSolidBrick;
     }
 
-    public void setRoDiatEarth(double roDiatEarth) {
-        this.roDiatEarth = roDiatEarth;
+    public void setRoSolidBrick(double roSolidBrick) {
+        this.roSolidBrick = roSolidBrick;
     }
 
-    public double getkFireclay() {
-        return kFireclay;
+    public double getkPlaster() {
+        return kPlaster;
     }
 
-    public void setkFireclay(double kFireclay) {
-        this.kFireclay = kFireclay;
+    public void setkPlaster(double kPlaster) {
+        this.kPlaster = kPlaster;
     }
 
-    public double getcFireclay() {
-        return cFireclay;
+    public double getcPlaster() {
+        return cPlaster;
     }
 
-    public void setcFireclay(double cFireclay) {
-        this.cFireclay = cFireclay;
+    public void setcPlaster(double cPlaster) {
+        this.cPlaster = cPlaster;
     }
 
-    public double getRoFireClay() {
-        return roFireClay;
+    public double getRoPlaster() {
+        return roPlaster;
     }
 
-    public void setRoFireClay(double roFireClay) {
-        this.roFireClay = roFireClay;
+    public void setRoPlaster(double roPlaster) {
+        this.roPlaster = roPlaster;
+    }
+
+
+
+    public double getkStyrofoam() {
+        return kStyrofoam;
+    }
+
+    public void setkStyrofoam(double kStyrofoam) {
+        this.kStyrofoam = kStyrofoam;
+    }
+
+    public double getcStyrofoam() {
+        return cStyrofoam;
+    }
+
+    public void setcStyrofoam(double cStyrofoam) {
+        this.cStyrofoam = cStyrofoam;
+    }
+
+    public double getRoStyrofoam() {
+        return roStyrofoam;
+    }
+
+    public void setRoStyrofoam(double roStyrofoam) {
+        this.roStyrofoam = roStyrofoam;
     }
 
     @Override
@@ -272,15 +306,18 @@ public class GlobalData {
                 ", nE=" + nE +
                 ", nN=" + nN +
                 ", alfa=" + alfa +
-                ", kMetalSheet=" + kMetalSheet +
-                ", cMetalSheet=" + cMetalSheet +
-                ", roMetalSheet=" + roMetalSheet +
-                ", kDiatEart=" + kDiatEarth +
-                ", cDiatEarth=" + cDiatEarth +
-                ", roDiatEarth=" + roDiatEarth +
-                ", kFireclay=" + kFireclay +
-                ", cFireclay=" + cFireclay +
-                ", roFireClay=" + roFireClay +
+                ", kGypsumPlaster=" + kGypsumPlaster +
+                ", cGypsumPlaster=" + cGypsumPlaster +
+                ", roGypsumPlaster=" + roGypsumPlaster +
+                ", kSolidBrick=" + kSolidBrick +
+                ", cSolidBrick=" + cSolidBrick +
+                ", roSolidBrick=" + roSolidBrick +
+                ", kStyrofoam=" + kStyrofoam +
+                ", cStyrofoam=" + cStyrofoam +
+                ", roStyrofoam=" + roStyrofoam +
+                ", kPlaster=" + kPlaster +
+                ", cPlaster=" + cPlaster +
+                ", roPlaster=" + roPlaster +
                 ", tInitial=" + tInitial +
                 ", simTime=" + simTime +
                 ", simStepTime=" + simStepTime +

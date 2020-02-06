@@ -1,7 +1,4 @@
-import org.la4j.Vector;
-
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 
 public class Grid {
     DecimalFormat formatter = new DecimalFormat("#0.000");
@@ -24,7 +21,7 @@ public class Grid {
 
         printElements(globalData);
         printNodes(globalData);
-        setLocalValuesForElements(globalData,universalElement,(int)globalData.getAlfa(),(int)globalData.getcMetalSheet(),(int)globalData.getRoMetalSheet(),(int)globalData.getkMetalSheet(),globalData.getAmbientTemp());
+        setLocalValuesForElements(globalData,universalElement,(int)globalData.getAlfa(),(int)globalData.getcGypsumPlaster(),(int)globalData.getRoGypsumPlaster(),(int)globalData.getkGypsumPlaster(),globalData.getAmbientTemp());
         aggregation(globalData,universalElement);
     }
     public Element[] calcElements(GlobalData globalData){
@@ -84,11 +81,12 @@ public class Grid {
         double deltaX=globalData.getW()/(globalData.getnW()-1);
         /*
         *
-        *   szerokosc siatki = 425mm
-        *   ilosc elementow na szerokosc = 85   (425mm/5mm)
-        *   szerokosc 1 warstwy - blachy - rowna jest 5mm wiec zajmuje 1 element na szerokosc
-        *   szerokosc 2 warstwy - ziemi okrzemkowej - rowna jest 40mm wiec zajmuje 8 elementow na szerokosc
-        *   szerokosc 3 warstwy - kamieni szamotowych - rowna jest 380mm wiec zajmuje 76 elementow na szerokosc
+        *   szerokosc siatki = 370mm
+        *   ilosc elementow na szerokosc = 74   (370mm/5mm)
+        *   szerokosc 1 warstwy - tynk gipsowy - rowna jest 15mm wiec zajmuje 3 elementy na szerokosc
+        *   szerokosc 2 warstwy - cegły - rowna jest 250mm wiec zajmuje 50 elementow na szerokosc
+        *   szerokosc 3 warstwy - styropian - rowna jest 100mm wiec zajmuje 20 elementow na szerokosc
+        *   szerokosc 4 warstwy - tynku - rowna jest 5mm wiec zajmuje jeden element na szerokosc
         *   deltaX - szerokosć jednego elementu
         *
         */
@@ -99,21 +97,21 @@ public class Grid {
                 tempNodes[j] = nodes[elements[i].getIdOfNodes()[j]];
                 if (tempNodes[j].getX() <=deltaX) { //1 element na szerokosc
 
-                    k = (int) globalData.getkMetalSheet();
-                    c = (int) globalData.getcMetalSheet();
-                    ro = (int) globalData.getRoMetalSheet();
+                    k = (int) globalData.getkGypsumPlaster();
+                    c = (int) globalData.getcGypsumPlaster();
+                    ro = (int) globalData.getRoGypsumPlaster();
 
                 } else if (tempNodes[j].getX() <= 9*deltaX && tempNodes[j].getX() >= deltaX) { //od 1 do 9 elementu na szerokosc
 
-                    k = (int) globalData.getkDiatEarth();
-                    c = (int) globalData.getcDiatEarth();
-                    ro = (int) globalData.getRoDiatEarth();
+                    k = (int) globalData.getkSolidBrick();
+                    c = (int) globalData.getcSolidBrick();
+                    ro = (int) globalData.getRoSolidBrick();
 
                 } else if (tempNodes[j].getX() >= 9*deltaX) {        //od 9 elementu na szerokosc
 
-                    k = (int) globalData.getkFireclay();
-                    c = (int) globalData.getcFireclay();
-                    ro = (int) globalData.getRoFireClay();
+                    k = (int) globalData.getkPlaster();
+                    c = (int) globalData.getcPlaster();
+                    ro = (int) globalData.getRoPlaster();
                 }
             }
 
