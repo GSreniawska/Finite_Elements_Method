@@ -15,9 +15,18 @@ public class GlobalData {
     private int nN;
 
     private double alfa;    //dane materialowe
-    private double k;
-    private double c;
-    private double ro;
+
+    private double kMetalSheet;
+    private double cMetalSheet;
+    private double roMetalSheet;
+
+    private double kDiatEarth;
+    private double cDiatEarth;
+    private double roDiatEarth;
+
+    private double kFireclay;
+    private double cFireclay;
+    private double roFireClay;
 
     private double tInitial;    //temperatura poczatkowa
     private double simTime;
@@ -60,9 +69,19 @@ public class GlobalData {
         setnE((nH-1)*(nW-1));
         setnN(nH*nW);
         setAlfa(Double.parseDouble(mapOfData.get("alfa")));
-        setK(Double.parseDouble(mapOfData.get("k")));
-        setC(Double.parseDouble(mapOfData.get("c")));
-        setRo(Double.parseDouble(mapOfData.get("ro")));
+
+        setkDiatEarth(Double.parseDouble(mapOfData.get("kDiatEarth")));
+        setcDiatEarth(Double.parseDouble(mapOfData.get("cDiatEarth")));
+        setRoDiatEarth(Double.parseDouble(mapOfData.get("roDiatEarth")));
+
+        setkFireclay(Double.parseDouble(mapOfData.get("kFireclay")));
+        setcFireclay(Double.parseDouble(mapOfData.get("cFireclay")));
+        setRoFireClay(Double.parseDouble(mapOfData.get("roFireclay")));
+
+        setkMetalSheet(Double.parseDouble(mapOfData.get("kMetalSheet")));
+        setcMetalSheet(Double.parseDouble(mapOfData.get("cMetalSheet")));
+        setRoMetalSheet(Double.parseDouble(mapOfData.get("roMetalSheet")));
+
         setTInitial(Double.parseDouble(mapOfData.get("tInitial")));
         setAmbientTemp(Double.parseDouble(mapOfData.get("ambientTemp")));
         setSimTime(Double.parseDouble(mapOfData.get("simTime")));
@@ -128,29 +147,6 @@ public class GlobalData {
         this.alfa = alfa;
     }
 
-    public double getK() {
-        return k;
-    }
-
-    public void setK(double k) {
-        this.k = k;
-    }
-
-    public double getC() {
-        return c;
-    }
-
-    public void setC(double c) {
-        this.c = c;
-    }
-
-    public double getRo() {
-        return ro;
-    }
-
-    public void setRo(double ro) {
-        this.ro = ro;
-    }
 
     public double getTInitial() {
         return tInitial;
@@ -192,6 +188,80 @@ public class GlobalData {
         this.ambientTemp = ambientTemp;
     }
 
+
+
+    public double getkMetalSheet() {
+        return kMetalSheet;
+    }
+
+    public void setkMetalSheet(double kMetalSheet) {
+        this.kMetalSheet = kMetalSheet;
+    }
+
+    public double getcMetalSheet() {
+        return cMetalSheet;
+    }
+
+    public void setcMetalSheet(double cMetalSheet) {
+        this.cMetalSheet = cMetalSheet;
+    }
+
+    public double getRoMetalSheet() {
+        return roMetalSheet;
+    }
+
+    public void setRoMetalSheet(double roMetalSheet) {
+        this.roMetalSheet = roMetalSheet;
+    }
+
+    public double getkDiatEarth() {
+        return kDiatEarth;
+    }
+
+    public void setkDiatEarth(double kDiatEarth) {
+        this.kDiatEarth = kDiatEarth;
+    }
+
+    public double getcDiatEarth() {
+        return cDiatEarth;
+    }
+
+    public void setcDiatEarth(double cDiatEarth) {
+        this.cDiatEarth = cDiatEarth;
+    }
+
+    public double getRoDiatEarth() {
+        return roDiatEarth;
+    }
+
+    public void setRoDiatEarth(double roDiatEarth) {
+        this.roDiatEarth = roDiatEarth;
+    }
+
+    public double getkFireclay() {
+        return kFireclay;
+    }
+
+    public void setkFireclay(double kFireclay) {
+        this.kFireclay = kFireclay;
+    }
+
+    public double getcFireclay() {
+        return cFireclay;
+    }
+
+    public void setcFireclay(double cFireclay) {
+        this.cFireclay = cFireclay;
+    }
+
+    public double getRoFireClay() {
+        return roFireClay;
+    }
+
+    public void setRoFireClay(double roFireClay) {
+        this.roFireClay = roFireClay;
+    }
+
     @Override
     public String toString() {
         return "GlobalData{" +
@@ -202,10 +272,19 @@ public class GlobalData {
                 ", nE=" + nE +
                 ", nN=" + nN +
                 ", alfa=" + alfa +
-                ", k=" + k +
-                ", c=" + c +
-                ", ro=" + ro +
+                ", kMetalSheet=" + kMetalSheet +
+                ", cMetalSheet=" + cMetalSheet +
+                ", roMetalSheet=" + roMetalSheet +
+                ", kDiatEart=" + kDiatEarth +
+                ", cDiatEarth=" + cDiatEarth +
+                ", roDiatEarth=" + roDiatEarth +
+                ", kFireclay=" + kFireclay +
+                ", cFireclay=" + cFireclay +
+                ", roFireClay=" + roFireClay +
                 ", tInitial=" + tInitial +
+                ", simTime=" + simTime +
+                ", simStepTime=" + simStepTime +
+                ", ambientTemp=" + ambientTemp +
                 '}';
     }
 }

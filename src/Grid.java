@@ -20,7 +20,7 @@ public class Grid {
 
         printElements(globalData);
         printNodes(globalData);
-        setLocalValuesForElements(globalData,universalElement,(int)globalData.getAlfa(),(int)globalData.getC(),(int)globalData.getRo(),(int)globalData.getK(),globalData.getAmbientTemp());
+        setLocalValuesForElements(globalData,universalElement,(int)globalData.getAlfa(),(int)globalData.getcMetalSheet(),(int)globalData.getRoMetalSheet(),(int)globalData.getkMetalSheet(),globalData.getAmbientTemp());
         aggregation(globalData,universalElement);
     }
     public Element[] calcElements(GlobalData globalData){
@@ -54,6 +54,8 @@ public class Grid {
         double y=0;
         double deltaX=globalData.getW()/(globalData.getnW()-1);
         double deltaY=globalData.getH()/(globalData.getnH()-1);
+        System.out.println(deltaX);
+        System.out.println(deltaY);
         Node tempNode;
         int k=0;
 
@@ -61,7 +63,7 @@ public class Grid {
                 for (int j = 0; j < globalData.getnH(); j++) {
                     tempNode = new Node(k, i * deltaX, j * deltaY, globalData.getTInitial());
 
-                    if (tempNode.getX() == 0 || tempNode.getY() == 0 || tempNode.getX() == globalData.getW() || tempNode.getY() == globalData.getnH()) {
+                    if (tempNode.getX() == 0 || tempNode.getY() == 0 || tempNode.getX() == globalData.getW() || tempNode.getY() == globalData.getH()) {
                         tempNode.setBC(true);
                     } else {
                         tempNode.setBC(false);
@@ -73,12 +75,42 @@ public class Grid {
             return  nodes;
     }
     public void setLocalValuesForElements(GlobalData globalData,UniversalElement universalElement,int alfa,int c,int ro,int k,double tAmbient){
+        double deltaX=globalData.getW()/(globalData.getnW()-1);
+        /*
+        *
+        *   szerokosc siatki = 425mm
+        *   ilosc elementow na szerokosc = 85   (425mm/5mm)
+        *   szerokosc 1 warstwy - blachy - rowna jest 5mm wiec zajmuje 1 element na szerokosc
+        *   szerokosc 2 warstwy - ziemi okrzemkowej - rowna jest 40mm wiec zajmuje 8 elementow na szerokosc
+        *   szerokosc 3 warstwy - kamieni szamotowych - rowna jest 380mm wiec zajmuje 76 elementow na szerokosc
+        *   deltaX - szerokosć jednego elementu
+        *
+        */
 
-        for (int i = 0; i <globalData.getnE() ; i++) {
-            Node[] tempNodes=new Node[size];
-            for(int j=0;j<size;j++){
+        for (int i = 0; i < globalData.getnE(); i++) {
+            Node[] tempNodes = new Node[size];
+            for (int j = 0; j < size; j++) {
                 tempNodes[j] = nodes[elements[i].getIdOfNodes()[j]];
+                if (tempNodes[j].getX() == 0 && tempNodes[j + 1].getX() == deltaX) { //1 element na szerokosc
+
+                    k = (int) globalData.getkMetalSheet();
+                    c = (int) globalData.getcMetalSheet();
+                    ro = (int) globalData.getRoMetalSheet();
+
+                } else if (tempNodes[j].getX() <= 9*deltaX && tempNodes[j].getX() >= deltaX) { //od 1 do 9 elementu na szerokosc
+
+                    k = (int) globalData.getkDiatEarth();
+                    c = (int) globalData.getcDiatEarth();
+                    ro = (int) globalData.getRoDiatEarth();
+
+                } else if (tempNodes[j].getX() >= 9*deltaX) {        //od 9 elementu na szerokosc
+
+                    k = (int) globalData.getkFireclay();
+                    c = (int) globalData.getcFireclay();
+                    ro = (int) globalData.getRoFireClay();
+                }
             }
+
             elements[i].setLocal_H_Matrix(universalElement.calc_H_Hbc_Matrix(k,tempNodes,alfa));
             elements[i].setLocal_C_Matrix(universalElement.calc_C_Matrix(c,ro,tempNodes));
             elements[i].setLocal_P_Vector(universalElement.calc_P_Vector(alfa,tempNodes,tAmbient));
