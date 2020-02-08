@@ -79,36 +79,34 @@ public class FEM implements Runnable {
         H_Matrix=grid.getH_Global_Matrix();
         C_Matrix=grid.getC_Global_Matrix();
         P_Vector=grid.getP_Global_Vector();
+        Vector temps;
+        double tAvg=globalData.getAmbientTemp();
+        System.out.println("\nTime[s]\tAvgTemp[C]");
 
-        System.out.println("\nTime[s]\tMinTemp[C]\tMaxTemp[C]");
-        for (int i = 0; i <globalData.getSimTime()/globalData.getSimStepTime();  i++) {
+            for (double tInit=globalData.getTInitial();tInit>globalData.getAmbientTemp();){
+                Matrix H_FINAL_MATRIX = Matrix.from2DArray(H_Matrix);
 
-            Matrix H_FINAL_MATRIX=Matrix.from2DArray(H_Matrix);
+                Matrix C_FINAL_MATRIX = Matrix.from2DArray(C_Matrix);
+                C_FINAL_MATRIX = C_FINAL_MATRIX.divide(globalData.getSimStepTime());
 
-            Matrix C_FINAL_MATRIX=Matrix.from2DArray(C_Matrix);
-            C_FINAL_MATRIX=C_FINAL_MATRIX.divide(globalData.getSimStepTime());
+                Vector P_FINAL_VECTOR = Vector.fromArray(P_Vector).multiply(-1);
+                H_FINAL_MATRIX = H_FINAL_MATRIX.add(C_FINAL_MATRIX);
+                Vector tmpVec = C_FINAL_MATRIX.multiply(INITIAL_TEMP_VECTOR);
+                P_FINAL_VECTOR = P_FINAL_VECTOR.add(tmpVec);
 
-            Vector P_FINAL_VECTOR=Vector.fromArray(P_Vector).multiply(-1);
-            H_FINAL_MATRIX=H_FINAL_MATRIX.add(C_FINAL_MATRIX);
-            Vector tmpVec=C_FINAL_MATRIX.multiply(INITIAL_TEMP_VECTOR);
-            P_FINAL_VECTOR=P_FINAL_VECTOR.add(tmpVec);
+                LinearSystemSolver gaussianSolver = new GaussianSolver(H_FINAL_MATRIX);
+                temps = gaussianSolver.solve(P_FINAL_VECTOR);
 
-            System.out.println("P_Vector, iteration "+(i+1)+":\n"+P_FINAL_VECTOR);
-           // System.out.println("H_Matrix, iteration "+(i+1)+":\n"+H_FINAL_MATRIX);
+               double tMax = temps.max();
+               double tMin = temps.min();
+                tInit = (tMin+tMax)/2;
 
-            LinearSystemSolver gaussianSolver=new GaussianSolver(H_FINAL_MATRIX);
-            Vector temps=gaussianSolver.solve(P_FINAL_VECTOR);
+                System.out.println((int) (k * globalData.getSimStepTime()) + "\t\t" + tInit );
+                k++;
 
-         //   System.out.println(temps);
-            double tMax= temps.max();
-            double tMin=temps.min();
+                INITIAL_TEMP_VECTOR = temps;
+            }
 
-
-            System.out.println((int)(k*globalData.getSimStepTime())+"\t\t"+df2.format(tMin)+"\t\t\t"+df2.format(tMax));
-            k++;
-
-            INITIAL_TEMP_VECTOR=temps;
-        }
 
 
 

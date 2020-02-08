@@ -349,8 +349,8 @@ public class UniversalElement {
                 H_final[i][j]=H_m[i][j]+H_BC_matrix[i][j];
             }
         }
-        System.out.println("");
-        print2DArray(H_final,size);
+      //  System.out.println("");
+     //   print2DArray(H_final,size);
         return H_final;
     }
     //-------------------------------Wektor P -----------------------------------------------------------

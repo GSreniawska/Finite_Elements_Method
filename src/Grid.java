@@ -21,7 +21,7 @@ public class Grid {
 
         printElements(globalData);
         printNodes(globalData);
-        setLocalValuesForElements(globalData,universalElement,(int)globalData.getAlfa(),(int)globalData.getcGypsumPlaster(),(int)globalData.getRoGypsumPlaster(),(int)globalData.getkGypsumPlaster(),globalData.getAmbientTemp());
+        setLocalValuesForElements(globalData,universalElement,1,1,1,1,globalData.getAmbientTemp());
         aggregation(globalData,universalElement);
     }
     public Element[] calcElements(GlobalData globalData){
@@ -60,13 +60,14 @@ public class Grid {
         Node tempNode;
         int k=0;
 
+
             for (int i = 0; i < globalData.getnW(); i++) {
                 for (int j = 0; j < globalData.getnH(); j++) {
                     tempNode = new Node(k, (double)Math.round(i*deltaX * 100000d) / 100000d
                             ,(double)Math.round(j*deltaY * 100000d) / 100000d
                             , globalData.getTInitial());
 
-                    if (tempNode.getX() == 0 || tempNode.getY() == 0 || tempNode.getX() == globalData.getW() || tempNode.getY() == globalData.getH()) {
+                    if (tempNode.getX() == 0) {
                         tempNode.setBC(true);
                     } else {
                         tempNode.setBC(false);
@@ -78,42 +79,54 @@ public class Grid {
             return  nodes;
     }
     public void setLocalValuesForElements(GlobalData globalData,UniversalElement universalElement,int alfa,int c,int ro,int k,double tAmbient){
-        double deltaX=globalData.getW()/(globalData.getnW()-1);
         /*
-        *
-        *   szerokosc siatki = 370mm
-        *   ilosc elementow na szerokosc = 74   (370mm/5mm)
-        *   szerokosc 1 warstwy - tynk gipsowy - rowna jest 15mm wiec zajmuje 3 elementy na szerokosc
-        *   szerokosc 2 warstwy - cegły - rowna jest 250mm wiec zajmuje 50 elementow na szerokosc
-        *   szerokosc 3 warstwy - styropian - rowna jest 100mm wiec zajmuje 20 elementow na szerokosc
-        *   szerokosc 4 warstwy - tynku - rowna jest 5mm wiec zajmuje jeden element na szerokosc
-        *   deltaX - szerokosć jednego elementu
-        *
-        */
+         *
+         *
+         *   szerokosc siatki = 370mm
+         *   ilosc elementow na szerokosc = 74   (370mm/5mm)
+         *   szerokosc 1 warstwy - tynku - rowna jest 5mm wiec zajmuje jeden element na szerokosc
+         *   szerokosc 2 warstwy - styropian - rowna jest 100mm wiec zajmuje 20 elementow na szerokosc
+         *   szerokosc 3 warstwy - cegły - rowna jest 250mm wiec zajmuje 50 elementow na szerokosc
+         *   szerokosc 4 warstwy - tynk gipsowy - rowna jest 15mm wiec zajmuje 3 elementy na szerokosc
+         *
+         *
+         *   Dane Materiałowe Źródło: http://www.certyfikat-energetyczny.powiat.pl/CE_P/wspolczynniki_przewodzenia.html
+         *
+         */
+        int eH=globalData.getnH()-1;
 
         for (int i = 0; i < globalData.getnE(); i++) {
             Node[] tempNodes = new Node[size];
             for (int j = 0; j < size; j++) {
                 tempNodes[j] = nodes[elements[i].getIdOfNodes()[j]];
-                if (tempNodes[j].getX() <=deltaX) { //1 element na szerokosc
 
-                    k = (int) globalData.getkGypsumPlaster();
-                    c = (int) globalData.getcGypsumPlaster();
-                    ro = (int) globalData.getRoGypsumPlaster();
-
-                } else if (tempNodes[j].getX() <= 9*deltaX && tempNodes[j].getX() >= deltaX) { //od 1 do 9 elementu na szerokosc
-
-                    k = (int) globalData.getkSolidBrick();
-                    c = (int) globalData.getcSolidBrick();
-                    ro = (int) globalData.getRoSolidBrick();
-
-                } else if (tempNodes[j].getX() >= 9*deltaX) {        //od 9 elementu na szerokosc
-
-                    k = (int) globalData.getkPlaster();
-                    c = (int) globalData.getcPlaster();
-                    ro = (int) globalData.getRoPlaster();
-                }
             }
+            if (i <= 1 * eH) { //1 element na szerokosc
+                System.out.println("1 warstwa");
+                k = (int) globalData.getkPlaster();
+                c = (int) globalData.getcPlaster();
+                ro = (int) globalData.getRoPlaster();
+
+            } else if (i >= (1 * eH + 1) && i < (21 * eH)) { //od 2 do 21 wlacznie elementu na szerokosc
+
+                System.out.println("2 warstwa");
+                k = (int) globalData.getkStyrofoam();
+                c = (int) globalData.getcStyrofoam();
+                ro = (int) globalData.getRoStyrofoam();
+
+            } else if (i >= (21 * eH + 1) && i < (71 * eH)) { //22 do 71 wlacznie elementu na szerokosc
+                System.out.println("3 warstwa");
+                k = (int) globalData.getkSolidBrick();
+                c = (int) globalData.getcSolidBrick();
+                ro = (int) globalData.getRoSolidBrick();
+
+            } else if (i >= (71 * eH + 1) && i < (74 * eH)) {        // od 72 do 74 wlacznie elementu na szerokosc
+                System.out.println("4 warstwa");
+                k = (int) globalData.getkGypsumPlaster();
+                c = (int) globalData.getcGypsumPlaster();
+                ro = (int) globalData.getRoGypsumPlaster();
+            }
+            System.out.println("Element " + (i + 1) + "\n\n");
 
             elements[i].setLocal_H_Matrix(universalElement.calc_H_Hbc_Matrix(k,tempNodes,alfa));
             elements[i].setLocal_C_Matrix(universalElement.calc_C_Matrix(c,ro,tempNodes));
