@@ -1,4 +1,4 @@
-H=1.0
+H=1
 W=0.37
 nH=11
 nW=75
@@ -16,6 +16,6 @@ kPlaster=0.70
 cPlaster=840
 roPlaster=1700
 tInitial=25
-simTime=6000
-simStepTime=100
+simTime=500
+simStepTime=5000
 ambientTemp=0

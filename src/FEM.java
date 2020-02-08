@@ -93,15 +93,19 @@ public class FEM implements Runnable {
                 H_FINAL_MATRIX = H_FINAL_MATRIX.add(C_FINAL_MATRIX);
                 Vector tmpVec = C_FINAL_MATRIX.multiply(INITIAL_TEMP_VECTOR);
                 P_FINAL_VECTOR = P_FINAL_VECTOR.add(tmpVec);
+                //   System.out.println("P_Vector, iteration "+(i+1)+":\n"+P_FINAL_VECTOR);
+                // System.out.println("H_Matrix, iteration "+(k)+":\n"+H_FINAL_MATRIX);
 
                 LinearSystemSolver gaussianSolver = new GaussianSolver(H_FINAL_MATRIX);
                 temps = gaussianSolver.solve(P_FINAL_VECTOR);
 
-               double tMax = temps.max();
-               double tMin = temps.min();
+
+                double tMax = temps.max();
+                double tMin = temps.min();
                 tInit = (tMin+tMax)/2;
 
                 System.out.println((int) (k * globalData.getSimStepTime()) + "\t\t" + tInit );
+               // System.out.println("Elemenet "+k+"\n");
                 k++;
 
                 INITIAL_TEMP_VECTOR = temps;

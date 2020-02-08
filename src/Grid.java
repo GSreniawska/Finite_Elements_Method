@@ -21,7 +21,7 @@ public class Grid {
 
         printElements(globalData);
         printNodes(globalData);
-        setLocalValuesForElements(globalData,universalElement,1,1,1,1,globalData.getAmbientTemp());
+        setLocalValuesForElements(globalData,universalElement,globalData.getAlfa(),1,1,1,globalData.getAmbientTemp());
         aggregation(globalData,universalElement);
     }
     public Element[] calcElements(GlobalData globalData){
@@ -78,7 +78,7 @@ public class Grid {
             }
             return  nodes;
     }
-    public void setLocalValuesForElements(GlobalData globalData,UniversalElement universalElement,int alfa,int c,int ro,int k,double tAmbient){
+    public void setLocalValuesForElements(GlobalData globalData,UniversalElement universalElement,double alfa,double c,double ro,double k,double tAmbient){
         /*
          *
          *
@@ -103,30 +103,31 @@ public class Grid {
             }
             if (i <= 1 * eH) { //1 element na szerokosc
                 System.out.println("1 warstwa");
-                k = (int) globalData.getkPlaster();
-                c = (int) globalData.getcPlaster();
-                ro = (int) globalData.getRoPlaster();
+                k = globalData.getkPlaster();
+                c = globalData.getcPlaster();
+                ro =  globalData.getRoPlaster();
 
             } else if (i >= (1 * eH + 1) && i < (21 * eH)) { //od 2 do 21 wlacznie elementu na szerokosc
 
                 System.out.println("2 warstwa");
-                k = (int) globalData.getkStyrofoam();
-                c = (int) globalData.getcStyrofoam();
-                ro = (int) globalData.getRoStyrofoam();
+                k =  globalData.getkStyrofoam();
+                c =  globalData.getcStyrofoam();
+                ro =  globalData.getRoStyrofoam();
 
             } else if (i >= (21 * eH + 1) && i < (71 * eH)) { //22 do 71 wlacznie elementu na szerokosc
                 System.out.println("3 warstwa");
-                k = (int) globalData.getkSolidBrick();
-                c = (int) globalData.getcSolidBrick();
-                ro = (int) globalData.getRoSolidBrick();
+                k =  globalData.getkSolidBrick();
+                c =  globalData.getcSolidBrick();
+                ro =  globalData.getRoSolidBrick();
 
             } else if (i >= (71 * eH + 1) && i < (74 * eH)) {        // od 72 do 74 wlacznie elementu na szerokosc
                 System.out.println("4 warstwa");
-                k = (int) globalData.getkGypsumPlaster();
-                c = (int) globalData.getcGypsumPlaster();
-                ro = (int) globalData.getRoGypsumPlaster();
+                k =  globalData.getkGypsumPlaster();
+                c =  globalData.getcGypsumPlaster();
+                ro =  globalData.getRoGypsumPlaster();
             }
-            System.out.println("Element " + (i + 1) + "\n\n");
+           // System.out.println("Element " + (i + 1) + "\n\n");
+           // System.out.println("K : "+k);
 
             elements[i].setLocal_H_Matrix(universalElement.calc_H_Hbc_Matrix(k,tempNodes,alfa));
             elements[i].setLocal_C_Matrix(universalElement.calc_C_Matrix(c,ro,tempNodes));
