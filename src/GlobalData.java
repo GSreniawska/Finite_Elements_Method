@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 public class GlobalData {
+    private int numberOfSimulation;
     private double H;   //wysokosc/szerokosc
     private double W;
 
@@ -15,6 +16,10 @@ public class GlobalData {
     private int nN;
 
     private double alfa;    //dane materialowe
+
+    private double k;
+    private double c;
+    private double ro;
 
     private double kGypsumPlaster;
     private double cGypsumPlaster;
@@ -37,7 +42,8 @@ public class GlobalData {
     private double simStepTime;
     private double ambientTemp;
 
-    public GlobalData(String simulation) {
+    public GlobalData(String simulation,int numberOfSimulation) {
+        this.numberOfSimulation=numberOfSimulation;
         readDataFromFile( simulation);
     }
 
@@ -45,10 +51,11 @@ public class GlobalData {
 
     public void readDataFromFile(String simulation) {
 
+
         try {
             File file = new File("F:\\Java\\Projects\\Sreniawska_Gabriela_MES\\"+simulation);
             BufferedReader br = new BufferedReader(new FileReader((file)));
-            String[] tempArr=new String[2];
+            String[] tempArr;
             HashMap<String,String> mapOfData=new HashMap<>();
 
             String line;
@@ -57,15 +64,42 @@ public class GlobalData {
                 tempArr=line.split("=");
                 mapOfData.put(tempArr[0],tempArr[1]);
             }
-            setParams(mapOfData);
+            if(numberOfSimulation==3) {
+                setParamsExtra_Project(mapOfData);
+            }else{
+                setParams(mapOfData);
+            }
             printData(mapOfData);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+    public void setParams(HashMap<String, String> mapOfData) {
+        setH(Double.parseDouble(mapOfData.get("H")));
+        setW(Double.parseDouble(mapOfData.get("W")));
+        setnH(Integer.parseInt(mapOfData.get("nH")));
+        setnW(Integer.parseInt(mapOfData.get("nW")));
+        setnE((nH-1)*(nW-1));
+        setnN(nH*nW);
+        setAlfa(Double.parseDouble(mapOfData.get("alfa")));
+
+
+        setK(Double.parseDouble(mapOfData.get("k")));
+        setC(Double.parseDouble(mapOfData.get("c")));
+        setRo(Double.parseDouble(mapOfData.get("ro")));
+
+
+        setTInitial(Double.parseDouble(mapOfData.get("tInitial")));
+        setAmbientTemp(Double.parseDouble(mapOfData.get("ambientTemp")));
+        setSimTime(Double.parseDouble(mapOfData.get("simTime")));
+        setSimStepTime(Double.parseDouble(mapOfData.get("simStepTime")));
+    }
+
+
     //ustawienie danych z test case do mapy
-    public  void setParams(HashMap<String,String> mapOfData) {
+    public  void setParamsExtra_Project(HashMap<String,String> mapOfData) {
         setH(Double.parseDouble(mapOfData.get("H")));
         setW(Double.parseDouble(mapOfData.get("W")));
         setnH(Integer.parseInt(mapOfData.get("nH")));
@@ -296,8 +330,7 @@ public class GlobalData {
         this.roStyrofoam = roStyrofoam;
     }
 
-    @Override
-    public String toString() {
+    public String toStringExtra_Project() {
         return "GlobalData{" +
                 "H=" + H +
                 ", W=" + W +
@@ -323,5 +356,29 @@ public class GlobalData {
                 ", simStepTime=" + simStepTime +
                 ", ambientTemp=" + ambientTemp +
                 '}';
+    }
+
+    public double getK() {
+        return k;
+    }
+
+    public void setK(double k) {
+        this.k = k;
+    }
+
+    public double getC() {
+        return c;
+    }
+
+    public void setC(double c) {
+        this.c = c;
+    }
+
+    public double getRo() {
+        return ro;
+    }
+
+    public void setRo(double ro) {
+        this.ro = ro;
     }
 }
