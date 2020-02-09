@@ -93,7 +93,7 @@ public class Grid {
          *   Dane Materiałowe Źródło: http://www.certyfikat-energetyczny.powiat.pl/CE_P/wspolczynniki_przewodzenia.html
          *
          */
-        int eH=globalData.getnH()-1;
+        int eH = globalData.getnH() - 1;
 
         for (int i = 0; i < globalData.getnE(); i++) {
             Node[] tempNodes = new Node[size];
@@ -101,37 +101,37 @@ public class Grid {
                 tempNodes[j] = nodes[elements[i].getIdOfNodes()[j]];
 
             }
-            if (i <= 1 * eH) { //1 element na szerokosc
+            if (i <=3*eH) {
                 System.out.println("1 warstwa");
-                k = globalData.getkPlaster();
-                c = globalData.getcPlaster();
-                ro =  globalData.getRoPlaster();
+                k = globalData.getkGypsumPlaster();
+                c = globalData.getcGypsumPlaster();
+                ro = globalData.getRoGypsumPlaster();
 
-            } else if (i >= (1 * eH + 1) && i < (21 * eH)) { //od 2 do 21 wlacznie elementu na szerokosc
+            } else if (i>=(3*eH+1) && i<=(53*eH)) {
 
                 System.out.println("2 warstwa");
-                k =  globalData.getkStyrofoam();
-                c =  globalData.getcStyrofoam();
-                ro =  globalData.getRoStyrofoam();
+                k = globalData.getkSolidBrick();
+                c = globalData.getcSolidBrick();
+                ro = globalData.getRoSolidBrick();
 
-            } else if (i >= (21 * eH + 1) && i < (71 * eH)) { //22 do 71 wlacznie elementu na szerokosc
+            } else if (i>=(53*eH+1) && i<=(73*eH)) { //22 do 71 wlacznie elementu na szerokosc
                 System.out.println("3 warstwa");
-                k =  globalData.getkSolidBrick();
-                c =  globalData.getcSolidBrick();
-                ro =  globalData.getRoSolidBrick();
+                k = globalData.getkStyrofoam();
+                c = globalData.getcStyrofoam();
+                ro = globalData.getRoStyrofoam();
 
-            } else if (i >= (71 * eH + 1) && i < (74 * eH)) {        // od 72 do 74 wlacznie elementu na szerokosc
+            } else if (i>=(73*eH+1)) {        // od 72 do 74 wlacznie elementu na szerokosc
                 System.out.println("4 warstwa");
-                k =  globalData.getkGypsumPlaster();
-                c =  globalData.getcGypsumPlaster();
-                ro =  globalData.getRoGypsumPlaster();
+                k = globalData.getkPlaster();
+                c = globalData.getcPlaster();
+                ro = globalData.getRoPlaster();
             }
-           // System.out.println("Element " + (i + 1) + "\n\n");
-           // System.out.println("K : "+k);
+             System.out.println("Element " + (i + 1) + "\n\n");
+             System.out.println("K : "+k);
 
-            elements[i].setLocal_H_Matrix(universalElement.calc_H_Hbc_Matrix(k,tempNodes,alfa));
-            elements[i].setLocal_C_Matrix(universalElement.calc_C_Matrix(c,ro,tempNodes));
-            elements[i].setLocal_P_Vector(universalElement.calc_P_Vector(alfa,tempNodes,tAmbient));
+            elements[i].setLocal_H_Matrix(universalElement.calc_H_Hbc_Matrix(k, tempNodes, alfa));
+            elements[i].setLocal_C_Matrix(universalElement.calc_C_Matrix(c, ro, tempNodes));
+            elements[i].setLocal_P_Vector(universalElement.calc_P_Vector(alfa, tempNodes, tAmbient));
 
         }
     }

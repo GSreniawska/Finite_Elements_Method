@@ -83,7 +83,7 @@ public class FEM implements Runnable {
         double tAvg=globalData.getAmbientTemp();
         System.out.println("\nTime[s]\tAvgTemp[C]");
 
-            for (double tInit=globalData.getTInitial();tInit>globalData.getAmbientTemp();){
+            for (double tInit=globalData.getTInitial();tInit<globalData.getAmbientTemp();){
                 Matrix H_FINAL_MATRIX = Matrix.from2DArray(H_Matrix);
 
                 Matrix C_FINAL_MATRIX = Matrix.from2DArray(C_Matrix);

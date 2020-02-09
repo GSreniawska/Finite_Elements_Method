@@ -330,7 +330,7 @@ public class UniversalElement {
         }
         for (int i = 0; i <size ; i++) {
             for (int j = 0; j <size ; j++) {
-                sumPC_H_BCArray[i][j]*=alfa;
+                sumPC_H_BCArray[i][j]*=(-alfa);
             };
         }
 
