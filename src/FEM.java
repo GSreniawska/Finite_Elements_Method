@@ -1,5 +1,6 @@
 
 
+import com.opencsv.CSVWriter;
 import org.la4j.LinearAlgebra;
 import org.la4j.Matrix;
 import org.la4j.Vector;
@@ -10,6 +11,9 @@ import org.la4j.linear.LeastSquaresSolver;
 import org.la4j.linear.LinearSystemSolver;
 
 import java.awt.geom.Point2D;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -31,14 +35,16 @@ public class FEM implements Runnable {
     @Override
     public void run() {
         String simData="";
+        Scanner input = new Scanner(System.in);
+
         int numberOfSimulation=-1;
-        System.out.println("Which simulation (1 or 2) or wall of industrial oven (3) ?");
-        try {
-            Scanner input = new Scanner(System.in);
-             numberOfSimulation= input.nextInt();
-        } catch (Exception e) {
-            e.getMessage();
-        }
+        while(numberOfSimulation!=4){
+            System.out.println("Which simulation (1 or 2) or wall of industrial oven (3) or exit (4)?");
+            try {
+                numberOfSimulation = input.nextInt();
+            } catch (Exception e) {
+                e.getMessage();
+            }
             switch (numberOfSimulation) {
                 case 1:
                     simData = "data.txt";
@@ -51,14 +57,14 @@ public class FEM implements Runnable {
                     break;
             }
 
-        GlobalData globalData = new GlobalData(simData,numberOfSimulation);
-        UniversalElement universalElement = new UniversalElement(); //tworzymy element
-        Grid grid = new Grid(globalData, universalElement,numberOfSimulation); //tworzymy siatke
-        if(numberOfSimulation==3){
-            simulationExtra_Project(grid, globalData);
-        }
-        else{
-            simulationBasic(grid,globalData);
+            GlobalData globalData = new GlobalData(simData, numberOfSimulation);
+            UniversalElement universalElement = new UniversalElement(); //tworzymy element
+            Grid grid = new Grid(globalData, universalElement, numberOfSimulation); //tworzymy siatke
+            if (numberOfSimulation == 3) {
+                simulationExtra_Project(grid, globalData);
+            } else {
+                simulationBasic(grid, globalData);
+            }
         }
 
     }
@@ -99,10 +105,10 @@ public class FEM implements Runnable {
             };
             Vector temps=gaussianSolver.solve(P_FINAL_VECTOR);
 
-            //   System.out.println(temps);
+         //   System.out.println(temps);
             double tMax= temps.max();
             double tMin=temps.min();
-            //  System.out.println("P_Vector, iteration "+(i+1)+":\n"+P_FINAL_VECTOR);
+          //  System.out.println("P_Vector, iteration "+(i+1)+":\n"+P_FINAL_VECTOR);
             //System.out.println("H_Matrix, iteration "+(i+1)+":\n"+H_FINAL_MATRIX);
 
             System.out.println((int)(k*globalData.getSimStepTime())+"\t\t"+df2.format(tMin)+"\t\t\t"+df2.format(tMax));
@@ -129,6 +135,8 @@ public class FEM implements Runnable {
         P_Vector=grid.getP_Global_Vector();
         Vector temps;
         double tAvg=globalData.getAmbientTemp();
+        HashMap<Integer,Double> mapOfTimeAndTemp=new HashMap<>();
+        int temp;
         System.out.println("\nTime[s]\tAvgTemp[C]");
 
             for (double tInit=globalData.getTInitial();tInit<globalData.getAmbientTemp();){
@@ -149,17 +157,38 @@ public class FEM implements Runnable {
                 double tMax = temps.max();
                 double tMin = temps.min();
                 tInit = (tMin + tMax) / 2;
+                temp=(int) (k * globalData.getSimStepTime());
+                mapOfTimeAndTemp.put(temp,tInit);
 
                 System.out.println((int) (k * globalData.getSimStepTime()) + "\t\t" + tInit);
 
                 k++;
                 INITIAL_TEMP_VECTOR = temps;
             }
+            writeDataToCSVFormat(mapOfTimeAndTemp);
+
+    }
+    public void writeDataToCSVFormat(HashMap<Integer,Double > mapOfTimeAndTemp) {
+        File file = new File("F:\\Java\\Projects\\Sreniawska_Gabriela_MES\\dataCSV.csv");
+        try {
+            FileWriter outputfile = new FileWriter(file);
+            CSVWriter writer = new CSVWriter(outputfile);
+
+            mapOfTimeAndTemp.forEach((k, v) -> {
+                String[] header = {k.toString(),v.toString().replace(".",",")};
+
+                writer.writeNext(header);
+
+            });
+
+
+            writer.close();
 
 
 
-
-
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

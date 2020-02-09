@@ -259,7 +259,7 @@ public class UniversalElement {
 
             Vector s1=Vector.fromArray(shapeArray1);
             s1.set(0,0.25 * (1 - pc1R.getX()) * (1 - pc1R.getY()));
-            s1.set(1,0.25 * (1 + pc2R.getX()) * (1 - pc1R.getY()));
+            s1.set(1,0.25 * (1 + pc1R.getX()) * (1 - pc1R.getY()));
             s1.set(2,0.25 * (1 + pc1R.getX()) * (1 + pc1R.getY()));
             s1.set(3,0.25 * (1 - pc1R.getX()) * (1 + pc1R.getY()));
 
@@ -304,9 +304,9 @@ public class UniversalElement {
         if (tempNodes[3].isBC() && tempNodes[0].isBC()) {
             Point2D.Double pc2L = new Point2D.Double(-1., -1. / Math.sqrt(3));
             Point2D.Double pc1L = new Point2D.Double(-1., 1. / Math.sqrt(3));
-            l = calcL(3, 0,tempNodes);
+            l = calcL(0, 3,tempNodes);
             detJ1D = calcDetJ1D(l);
-            Vector s1=Vector.zero(4);
+            Vector s1=Vector.fromArray(shapeArray1);
             s1.set(0,0.25 * (1 - pc1L.getX()) * (1 - pc1L.getY()));
             s1.set(1,0.25 * (1 + pc1L.getX()) * (1 - pc1L.getY()));
             s1.set(2,0.25 * (1 + pc1L.getX()) * (1 + pc1L.getY()));
@@ -442,7 +442,7 @@ public class UniversalElement {
         if (tempNodes[3].isBC() && tempNodes[0].isBC()) {
             Point2D.Double pc2L = new Point2D.Double(-1., -1. / Math.sqrt(3));
             Point2D.Double pc1L = new Point2D.Double(-1., 1. / Math.sqrt(3));
-            l = calcL(3, 0,tempNodes);
+            l = calcL(0, 3,tempNodes);
             detJ1D = calcDetJ1D(l);
 
             Vector p1=Vector.fromArray(shapeVector1);
@@ -463,8 +463,10 @@ public class UniversalElement {
                     sumP_Vectors[i] += (p1.get(i)+p2.get(i)) * detJ1D;
             }
         }
+        for (int i = 0; i <size ; i++) {
 
-
+            sumP_Vectors[i]=sumP_Vectors[i]*tAmbient*(-alfa);
+        }
         return sumP_Vectors;
     }
 

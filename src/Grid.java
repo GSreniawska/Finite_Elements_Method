@@ -1,7 +1,7 @@
-import java.text.DecimalFormat;
+import org.la4j.Matrix;
+import org.la4j.Vector;
 
 public class Grid {
-    DecimalFormat formatter = new DecimalFormat("#0.000");
     private Node[] nodes;
     private Element[] elements;
     private int size=4;
@@ -62,19 +62,23 @@ public class Grid {
         Node tempNode;
         int k=0;
 
-            for (int i = 0; i < globalData.getnW(); i++) {
-                for (int j = 0; j < globalData.getnH(); j++) {
+
+        for (int i = 0; i < globalData.getnW(); i++) {
+            for (int j = 0; j < globalData.getnH(); j++) {
+
+                if (numberOfSimulation == 3) {
                     tempNode = new Node(k, (double) Math.round(i * deltaX * 100000d) / 100000d
                             , (double) Math.round(j * deltaY * 100000d) / 100000d
                             , globalData.getTInitial());
-                    if (numberOfSimulation == 3) {
-                        if (tempNode.getX() == 0) {
-                            tempNode.setBC(true);
-                        } else {
-                            tempNode.setBC(false);
-                        }
-
+                    if (tempNode.getX() == 0) {
+                        tempNode.setBC(true);
+                    } else {
+                        tempNode.setBC(false);
+                    }
                 } else {
+                    tempNode = new Node(k, i * deltaX
+                            , j * deltaY
+                            , globalData.getTInitial());
                     if (tempNode.getX() == 0 || tempNode.getX() == globalData.getW() || tempNode.getY() == 0 || tempNode.getY() == globalData.getH()) {
                         tempNode.setBC(true);
                     } else {
@@ -88,8 +92,7 @@ public class Grid {
             return  nodes;
     }
     public void setLocalValuesForElements(GlobalData globalData,UniversalElement universalElement,double alfa,double c,double ro,double k,double tAmbient,int numberOfSimulation){
-        /*
-         *
+        /*  THE WALL
          *
          *   szerokosc siatki = 370mm
          *   ilosc elementow na szerokosc = 74   (370mm/5mm)
@@ -143,7 +146,7 @@ public class Grid {
 
         }
     }
-    public void aggregation(GlobalData globalData,UniversalElement universalElement){
+    public void aggregation(GlobalData globalData){
 
         for (int i = 0; i < globalData.getnE(); i++) {
             int[] id = new int[size];

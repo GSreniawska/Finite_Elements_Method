@@ -66,10 +66,12 @@ public class GlobalData {
             }
             if(numberOfSimulation==3) {
                 setParamsExtra_Project(mapOfData);
+                System.out.println(toStringExtra_Project());
             }else{
                 setParams(mapOfData);
+                System.out.println(toString());
             }
-            printData(mapOfData);
+           // printData(mapOfData);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -380,5 +382,26 @@ public class GlobalData {
 
     public void setRo(double ro) {
         this.ro = ro;
+    }
+
+    @Override
+    public String toString() {
+        return "GlobalData{" +
+                "numberOfSimulation=" + numberOfSimulation +
+                ", H=" + H +
+                ", W=" + W +
+                ", nH=" + nH +
+                ", nW=" + nW +
+                ", nE=" + nE +
+                ", nN=" + nN +
+                ", alfa=" + alfa +
+                ", k=" + k +
+                ", c=" + c +
+                ", ro=" + ro +
+                ", tInitial=" + tInitial +
+                ", simTime=" + simTime +
+                ", simStepTime=" + simStepTime +
+                ", ambientTemp=" + ambientTemp +
+                '}';
     }
 }
