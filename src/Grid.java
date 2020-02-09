@@ -61,7 +61,7 @@ public class Grid {
                 for (int j = 0; j < globalData.getnH(); j++) {
                     tempNode = new Node(k, i * deltaX, j * deltaY, globalData.getTInitial());
 
-                    if (tempNode.getX() == 0 || tempNode.getY() == 0 || tempNode.getX() == globalData.getW() || tempNode.getY() == globalData.getnH()) {
+                    if (tempNode.getX() == 0 || tempNode.getY() == 0 || tempNode.getX() == globalData.getW() || tempNode.getY() == globalData.getH()) {
                         tempNode.setBC(true);
                     } else {
                         tempNode.setBC(false);

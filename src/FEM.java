@@ -100,8 +100,8 @@ public class FEM implements Runnable {
          //   System.out.println(temps);
             double tMax= temps.max();
             double tMin=temps.min();
-            System.out.println("P_Vector, iteration "+(i+1)+":\n"+P_FINAL_VECTOR);
-            System.out.println("H_Matrix, iteration "+(i+1)+":\n"+H_FINAL_MATRIX);
+          //  System.out.println("P_Vector, iteration "+(i+1)+":\n"+P_FINAL_VECTOR);
+            //System.out.println("H_Matrix, iteration "+(i+1)+":\n"+H_FINAL_MATRIX);
 
             System.out.println((int)(k*globalData.getSimStepTime())+"\t\t"+df2.format(tMin)+"\t\t\t"+df2.format(tMax));
             k++;
