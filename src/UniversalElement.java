@@ -149,7 +149,7 @@ public class UniversalElement {
     public double calcDetJ(int integralPointNumber){
         return dx_dKsi(localPoints[integralPointNumber]) * dy_dEta(localPoints[integralPointNumber]) - dy_dKsi(localPoints[integralPointNumber]) * dx_dEta(localPoints[integralPointNumber]);
     }
-    public double[][] calcLocal_H_matrix(int integralPointNumber, int k) { //k-conductivity
+    public double[][] calcLocal_H_matrix(int integralPointNumber, double k) { //k-conductivity
         double[][] local_H_matrix=new double[size][size];
         for (int i = 0; i <size ; i++) {
             for (int j = 0; j <size ; j++) {
@@ -158,7 +158,7 @@ public class UniversalElement {
         }
         return local_H_matrix;
     }
-    public double[][] calc_H_Matrix(int k,Node[] tempNodes) {
+    public double[][] calc_H_Matrix(double k,Node[] tempNodes) {
         H_Matrix=new double[size][size];
         this.tempNodes=tempNodes;
         for (int i = 0; i <size ; i++) {
@@ -188,7 +188,7 @@ public class UniversalElement {
         System.out.println("Shape funs:");
         print2DArray(shapeFunctions,size);
     }
-    public double[][] calc_C_Matrix(int c,int ro,Node[] tempNodes){
+    public double[][] calc_C_Matrix(double c,double ro,Node[] tempNodes){
         this.tempNodes=tempNodes;
 
         C_Matrix=new double[size][size];
@@ -211,7 +211,7 @@ public class UniversalElement {
     public double calcDetJ1D(double l){
         return Math.abs(0.5*l);
     }
-    public double[][] calcLocal_H_BC_matrix(int alfa,Node[] tempNodes) {
+    public double[][] calcLocal_H_BC_matrix(double alfa,Node[] tempNodes) {
         double[] shapeArray1 = new double[size];
         double[] shapeArray2 = new double[size];
         double l;
@@ -330,7 +330,7 @@ public class UniversalElement {
         }
         for (int i = 0; i <size ; i++) {
             for (int j = 0; j <size ; j++) {
-                sumPC_H_BCArray[i][j]*=alfa;
+                sumPC_H_BCArray[i][j]*=(-alfa);
             };
         }
 
@@ -339,7 +339,7 @@ public class UniversalElement {
     public double calcL(int i1,int i2,Node[] tempNodes){
         return Math.sqrt(Math.pow(tempNodes[i1].getX()-tempNodes[i2].getX(),2)+Math.pow(tempNodes[i1].getY()-tempNodes[i2].getY(),2));
     }
-    public double[][] calc_H_Hbc_Matrix(int k,Node[] tempNodes,int alfa) {
+    public double[][] calc_H_Hbc_Matrix(double k,Node[] tempNodes,double alfa) {
         double[][] H_final=new double[size][size];
         double[][] H_BC_matrix= calcLocal_H_BC_matrix(alfa,tempNodes);
         double[][] H_m= calc_H_Matrix(k,tempNodes);
@@ -349,11 +349,12 @@ public class UniversalElement {
                 H_final[i][j]=H_m[i][j]+H_BC_matrix[i][j];
             }
         }
-
+      //  System.out.println("");
+     //   print2DArray(H_final,size);
         return H_final;
     }
     //-------------------------------Wektor P -----------------------------------------------------------
-    public double[] calc_P_Vector(int alfa,  Node[] tempNodes, double tAmbient){
+    public double[] calc_P_Vector(double alfa,  Node[] tempNodes, double tAmbient){
 
         double[] shapeVector1=new double[size];
         double[] shapeVector2=new double[size];
@@ -462,12 +463,7 @@ public class UniversalElement {
                     sumP_Vectors[i] += (p1.get(i)+p2.get(i)) * detJ1D;
             }
         }
-        for (int i = 0; i <size ; i++) {
 
-            sumP_Vectors[i]=sumP_Vectors[i]*tAmbient*(-alfa);
-            System.out.print(sumP_Vectors[i]+"    ");
-        }
-        System.out.println("");
 
         return sumP_Vectors;
     }
