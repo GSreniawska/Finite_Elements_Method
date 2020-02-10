@@ -58,8 +58,8 @@ public class FEM implements Runnable {
             }
 
             GlobalData globalData = new GlobalData(simData, numberOfSimulation);
-            UniversalElement universalElement = new UniversalElement(); //tworzymy element
-            Grid grid = new Grid(globalData, universalElement, numberOfSimulation); //tworzymy siatke
+            UniversalElement universalElement = new UniversalElement();
+            Grid grid = new Grid(globalData, universalElement, numberOfSimulation);
             if (numberOfSimulation == 3) {
                 simulationExtra_Project(grid, globalData);
             } else {
@@ -105,11 +105,8 @@ public class FEM implements Runnable {
             };
             Vector temps=gaussianSolver.solve(P_FINAL_VECTOR);
 
-         //   System.out.println(temps);
             double tMax= temps.max();
             double tMin=temps.min();
-          //  System.out.println("P_Vector, iteration "+(i+1)+":\n"+P_FINAL_VECTOR);
-            //System.out.println("H_Matrix, iteration "+(i+1)+":\n"+H_FINAL_MATRIX);
 
             System.out.println((int)(k*globalData.getSimStepTime())+"\t\t"+df2.format(tMin)+"\t\t\t"+df2.format(tMax));
             k++;

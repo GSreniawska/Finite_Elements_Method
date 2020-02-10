@@ -25,14 +25,12 @@ public class UniversalElement {
         this.etaArray=new double[size][size];
         this.ksiArray=new double[size][size];
         this.localPoints =new Point2D.Double[size];
-        this.localPoints =new Point2D.Double[size];
         this.jacobiArray=new double[jacobiSize][jacobiSize];
         this.tempNodes=new Node[size];
         this.dN_dXArray=new double[size][size];
         this.dN_dYArray =new double[size][size];
         this.H_Matrix=new double[size][size];
         this.C_Matrix=new double[size][size];
-
 
         calcLocalPoints();
         calcShapeFunctions();
@@ -149,7 +147,7 @@ public class UniversalElement {
     public double calcDetJ(int integralPointNumber){
         return dx_dKsi(localPoints[integralPointNumber]) * dy_dEta(localPoints[integralPointNumber]) - dy_dKsi(localPoints[integralPointNumber]) * dx_dEta(localPoints[integralPointNumber]);
     }
-    public double[][] calcLocal_H_matrix(int integralPointNumber, double k) { //k-conductivity
+    public double[][] calcLocal_H_matrix(int integralPointNumber, double k) {
         double[][] local_H_matrix=new double[size][size];
         for (int i = 0; i <size ; i++) {
             for (int j = 0; j <size ; j++) {

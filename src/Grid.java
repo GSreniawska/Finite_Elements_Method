@@ -8,7 +8,6 @@ public class Grid {
     private double[] P_Global_Vector;
     private double[][] H_Global_Matrix;
     private double[][] C_Global_Matrix;
-    private int finalsize=16;
 
     public Grid(GlobalData globalData,UniversalElement universalElement,int numberOfSimulation) {
         this.nodes=new Node[globalData.getnN()];
@@ -21,6 +20,7 @@ public class Grid {
 
         printElements(globalData);
         printNodes(globalData);
+
         if(numberOfSimulation==3) {
             setLocalValuesForElements(globalData, universalElement, globalData.getAlfa(),1, 1, 1, globalData.getAmbientTemp(), numberOfSimulation);
         }else{
@@ -55,14 +55,10 @@ public class Grid {
       }
     }
     public Node[] calcNodes(GlobalData globalData,int numberOfSimulation){
-        double x=0;
-        double y=0;
         double deltaX=globalData.getW()/(globalData.getnW()-1);
         double deltaY=globalData.getH()/(globalData.getnH()-1);
         Node tempNode;
         int k=0;
-
-
         for (int i = 0; i < globalData.getnW(); i++) {
             for (int j = 0; j < globalData.getnH(); j++) {
 
@@ -75,18 +71,21 @@ public class Grid {
                     } else {
                         tempNode.setBC(false);
                     }
-                } else {
+                }
+                else {
                     tempNode = new Node(k, i * deltaX
                             , j * deltaY
                             , globalData.getTInitial());
-                    if (tempNode.getX() == 0 || tempNode.getX() == globalData.getW() || tempNode.getY() == 0 || tempNode.getY() == globalData.getH()) {
+                    if (tempNode.getX() == 0 || tempNode.getX() == globalData.getW() || tempNode.getY() == 0 ||
+                            tempNode.getY() == globalData.getH()) {
+
                         tempNode.setBC(true);
                     } else {
                         tempNode.setBC(false);
                     }
-}
-                    nodes[k]=tempNode;
-                    k++;
+                }
+                nodes[k]=tempNode;
+                k++;
                 }
             }
             return  nodes;

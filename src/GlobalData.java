@@ -38,9 +38,9 @@ public class GlobalData {
     private double roPlaster;
 
     private double tInitial;    //temperatura poczatkowa
-    private double simTime;
-    private double simStepTime;
-    private double ambientTemp;
+    private double ambientTemp;     //temperatura otoczenia
+    private double simTime;     //czas symulacji [s]
+    private double simStepTime;     //krok czasowy
 
     public GlobalData(String simulation,int numberOfSimulation) {
         this.numberOfSimulation=numberOfSimulation;
@@ -86,21 +86,15 @@ public class GlobalData {
         setnE((nH-1)*(nW-1));
         setnN(nH*nW);
         setAlfa(Double.parseDouble(mapOfData.get("alfa")));
-
-
         setK(Double.parseDouble(mapOfData.get("k")));
         setC(Double.parseDouble(mapOfData.get("c")));
         setRo(Double.parseDouble(mapOfData.get("ro")));
-
-
         setTInitial(Double.parseDouble(mapOfData.get("tInitial")));
         setAmbientTemp(Double.parseDouble(mapOfData.get("ambientTemp")));
         setSimTime(Double.parseDouble(mapOfData.get("simTime")));
         setSimStepTime(Double.parseDouble(mapOfData.get("simStepTime")));
     }
 
-
-    //ustawienie danych z test case do mapy
     public  void setParamsExtra_Project(HashMap<String,String> mapOfData) {
         setH(Double.parseDouble(mapOfData.get("H")));
         setW(Double.parseDouble(mapOfData.get("W")));
@@ -131,10 +125,7 @@ public class GlobalData {
         setSimTime(Double.parseDouble(mapOfData.get("simTime")));
         setSimStepTime(Double.parseDouble(mapOfData.get("simStepTime")));
     }
-    //wyswietlanie danych
-    public  void printData(HashMap<String,String> mapOfData){
-        mapOfData.forEach((k,v)-> System.out.println("Key : "+k+"    Value : "+v));
-    }
+
     public double getH() {
         return H;
     }
